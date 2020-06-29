@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/itineraryWrapper"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_rounded_corner"
+    android:padding="20dp"
+    android:elevation="10dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp">
+
+    <RelativeLayout
+        android:id="@+id/timeline"
+        android:layout_width="wrap_content"
+        android:layout_height="130dp">
+        <ImageView
+            android:id="@+id/circleStart"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/circle_grey"/>
+
+        <View
+            android:id="@+id/line"
+            android:layout_width="1dp"
+            android:layout_height="150dp"
+            android:background="@color/lightGrey"
+            android:layout_centerHorizontal="true"/>
+
+        <ImageView
+            android:id="@+id/circleEnd"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/circle_grey"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/timeoftimeline"
+        android:layout_toRightOf="@id/timeline"
+        android:layout_width="wrap_content"
+        android:layout_height="130dp"
+        android:paddingBottom="2dp"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp">
+
+        <TextView
+            android:id="@+id/dayNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/lightGrey"
+            android:text="Day 1"
+            android:textSize="14sp"
+            android:fontFamily="@font/mmedium"
+            android:layout_marginBottom="5dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/startTimeInTimeline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="09.00"
+            android:textColor="@color/lightGrey"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/mmedium"
+            android:layout_below="@id/dayNo"/>
+
+        <TextView
+            android:id="@+id/endTimeInTimeline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="09.30"
+            android:textColor="@color/lightGrey"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/mmedium"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_toRightOf="@id/timeoftimeline"
+        android:layout_width="wrap_content"
+        android:layout_height="130dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp">
+
+        <TextView
+            android:id="@+id/activityDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="5D4N Fasilkom Outing to Yogyakarta"
+            android:textSize="14sp"
+            android:textColor="@color/defaultGrey"
+            android:textAlignment="center"
+            android:layout_marginBottom="15dp"
+            android:fontFamily="@font/mmedium"
+            android:textStyle="bold"/>
+
+        <RelativeLayout
+            android:layout_below="@id/activityDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true">
+            <TextView
+                android:id="@+id/onboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_onboard_20dp"
+                android:drawablePadding="10dp"
+                android:text="On board 30 Mins"
+                android:layout_marginBottom="10dp"
+                android:textSize="12sp"
+                android:textColor="@color/lightGrey"/>
+
+            <TextView
+                android:id="@+id/tour"
+                android:layout_below="@id/onboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_museum_20dp"
+                android:drawablePadding="10dp"
+                android:text="Tour -"
+                android:layout_marginBottom="10dp"
+                android:textSize="12sp"
+                android:textColor="@color/lightGrey"/>
+
+            <TextView
+                android:id="@+id/other"
+                android:layout_below="@id/tour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_clock_20dp"
+                android:drawablePadding="10dp"
+                android:text="Other -"
+                android:textSize="12sp"
+                android:textColor="@color/lightGrey"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

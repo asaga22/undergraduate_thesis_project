@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundColor"
+        android:layout_marginBottom="50dp">
+        
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="270dp"
+                    android:background="@drawable/gradient_blue_header_bg">
+
+                    <LinearLayout
+                        android:id="@+id/topbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp">
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_marginEnd="20dp"
+                            android:id="@+id/backArrowInTourDetails"
+                            android:src="@drawable/ic_backarrow"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tour Details"
+                            android:textSize="18sp"
+                            android:fontFamily="@font/mregular"
+                            android:textColor="@color/white"
+                            android:layout_marginStart="5dp"
+                            android:id="@+id/options"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/editAccountName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/topbar"
+                        android:text="Maria Martha Argerich"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/mregular"/>
+
+                    <ImageView
+                        android:id="@+id/dots"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_yellow_ellipsies"
+                        android:layout_below="@id/editAccountName"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="130dp">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:elevation="10dp"
+                        android:background="@drawable/white_circle">
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/addPic"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/circle_toscagreen"
+                                android:text="+"
+                                android:textColor="@color/white"
+                                android:textAlignment="center"
+                                app:layout_constraintBottom_toBottomOf="@+id/profile_image_edit"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:elevation="20dp"/>
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:id="@+id/profile_image_edit"
+                                app:civ_border_color="@color/white"
+                                app:civ_border_width="2dp"
+                                android:layout_centerHorizontal="true"
+                                android:src="@drawable/no_pic"
+                                android:layout_alignParentTop="true" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="50dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="50dp"
+                        android:background="@drawable/white_rounded_corner"
+                        android:elevation="5dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:elevation="10dp"
+                            android:background="@drawable/white_rounded_corner">
+
+                            <!-- field full name -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginTop="50dp"
+                                android:layout_marginRight="20dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/editAvatar"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="5dp"
+                                    android:text="Full Name" />
+
+                                <EditText
+                                    android:id="@+id/inputEditFullName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:paddingLeft="10dp"
+                                    android:paddingRight="10dp"
+                                    android:background="@drawable/softgrey_rounded_corner_lightgrey_outline" />
+
+                            </LinearLayout>
+
+                            <!-- field Username -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginRight="20dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="5dp"
+                                    android:text="Username" />
+
+                                <EditText
+                                    android:id="@+id/inputEditUsername"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:paddingLeft="10dp"
+                                    android:paddingRight="10dp"
+                                    android:background="@drawable/softgrey_rounded_corner_lightgrey_outline" />
+
+                            </LinearLayout>
+
+                            <!-- field Email -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginBottom="50dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="5dp"
+                                    android:text="Email" />
+
+                                <EditText
+                                    android:id="@+id/inputEditEmail"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:paddingLeft="10dp"
+                                    android:paddingRight="10dp"
+                                    android:background="@drawable/softgrey_rounded_corner_lightgrey_outline" />
+
+                            </LinearLayout>
+
+                            <Button
+                                android:layout_gravity="center"
+                                android:textSize="16sp"
+                                android:textAllCaps="false"
+                                android:paddingEnd="20dp"
+                                android:paddingStart="20dp"
+                                android:fontFamily="@font/mmedium"
+                                android:id="@+id/editAccount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Edit Account"
+                                android:background="@drawable/toscagreen_rounded_corner"
+                                android:textColor="@color/white"
+                                android:textAlignment="center"
+                                android:elevation="2dp"
+                                android:layout_marginBottom="50dp"/>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </ScrollView>
+
+    </RelativeLayout>
+</merge>

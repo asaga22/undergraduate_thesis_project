@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/backgroundColor"
+        android:layout_marginBottom="50dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="100"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="40"
+                android:background="@drawable/gradient_blue_header_bg">
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="100"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/relLayout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_weight="15">
+
+                    <TextView
+                        android:id="@+id/accountTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Account"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/mregular"/>
+
+                    <ImageView
+                        android:id="@+id/dots"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_yellow_ellipsies"
+                        android:layout_below="@id/accountTitle"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="5">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="80">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:weightSum="100">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="40">
+
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cv_one_login"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/white_rounded_corner"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_margin="15dp"
+                                    android:elevation="10dp"
+                                    app:cardElevation="10dp"
+                                    app:cardCornerRadius="10dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:orientation="vertical"
+                                        android:weightSum="100"
+                                        android:padding="10dp">
+
+                                        <RelativeLayout
+                                            android:id="@+id/relLayoutNameAccount"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="0dp"
+                                            android:layout_weight="20">
+                                        </RelativeLayout>
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="0dp"
+                                            android:layout_weight="80">
+
+                                            <TextView
+                                                android:id="@+id/accountName"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:text="Martha Argerich"
+                                                android:textAlignment="center"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold"
+                                                android:textColor="@color/defaultGrey"
+                                                android:fontFamily="@font/mmedium"
+                                                android:layout_marginTop="5dp"
+                                                android:layout_marginBottom="5dp"/>
+
+                                            <TextView
+                                                android:id="@+id/accountCategory"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:text="Tour Leader"
+                                                android:textAlignment="center"
+                                                android:layout_below="@id/accountName"
+                                                android:textSize="14sp"
+                                                android:fontFamily="@font/mregular"
+                                                android:textColor="@color/defaultGrey"
+                                                android:layout_marginBottom="20dp"/>
+
+                                                <Button
+                                                    android:textSize="16sp"
+                                                    android:textAllCaps="false"
+                                                    android:layout_below="@id/accountCategory"
+                                                    android:paddingEnd="20dp"
+                                                    android:paddingStart="20dp"
+                                                    android:fontFamily="@font/mmedium"
+                                                    android:id="@+id/btnEditAccount"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:text="Edit Account"
+                                                    android:background="@drawable/toscagreen_rounded_corner"
+                                                    android:textColor="@color/white"
+                                                    android:textAlignment="center"
+                                                    android:layout_centerHorizontal="true"
+                                                    android:elevation="2dp"/>
+
+                                        </RelativeLayout>
+
+                                    </LinearLayout>
+
+                                </androidx.cardview.widget.CardView>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="35">
+
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/card_account_tour_info"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/white_rounded_corner"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_margin="15dp"
+                                    android:elevation="10dp"
+                                    app:cardElevation="10dp"
+                                    app:cardCornerRadius="10dp">
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:padding="20dp">
+                                        <TextView
+                                            android:id="@+id/accountTourInfo"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:text="Tour Info"
+                                            android:textAlignment="center"
+                                            android:textSize="14sp"
+                                            android:fontFamily="@font/mregular"
+                                            android:textColor="@color/defaultGrey"
+                                            android:layout_marginBottom="5dp"
+                                            android:textStyle="bold"/>
+
+                                        <RelativeLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_below="@id/accountTourInfo">
+                                            <include layout="@layout/snippet_tourinfo_account"/>
+                                        </RelativeLayout>
+                                    </RelativeLayout>
+
+                                </androidx.cardview.widget.CardView>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="25">
+                                <Button
+                                    android:id="@+id/button_signout"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_marginTop="20dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Sign Out"
+                                    android:fontFamily="@font/mmedium"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/defaultGrey"
+                                    android:background="@drawable/white_round"
+                                    android:paddingStart="40dp"
+                                    android:paddingEnd="40dp"
+                                    android:textAllCaps="false"
+                                    android:elevation="10dp"/>
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include layout="@layout/snippet_picture_account"/>
+        </FrameLayout>
+
+    </RelativeLayout>
+</merge>

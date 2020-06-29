@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "977206290781",
+    "firebase_url": "https://myundergraduatethesisproject.firebaseio.com",
+    "project_id": "myundergraduatethesisproject",
+    "storage_bucket": "myundergraduatethesisproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977206290781:android:1048cb2e706d6de574e0b4",
+        "android_client_info": {
+          "package_name": "com.elkasaga.myundergraduatethesis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977206290781-e4rvddluo83nl1dtuvfopftlegf4albl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPr5OAfgD2dEX7Cg9ildyY37ONBnudVAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "977206290781-e4rvddluo83nl1dtuvfopftlegf4albl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977206290781:android:37ee201e5ae99a3974e0b4",
+        "android_client_info": {
+          "package_name": "com.elkasaga.undegraduatethesisproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977206290781-e4rvddluo83nl1dtuvfopftlegf4albl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPr5OAfgD2dEX7Cg9ildyY37ONBnudVAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "977206290781-e4rvddluo83nl1dtuvfopftlegf4albl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

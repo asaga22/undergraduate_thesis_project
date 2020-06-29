@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">UndegraduateThesisProject</string>
+
+    <string name="google_map_api_key">AIzaSyD-Ilt04SCysu_NLrWnt20uvVLWEzQXrqU</string>
+
+    <string name="addMoreActivityString"><u>add more activity</u></string>
+    <string name="addMoreParticipantString"><u>add more participant</u></string>
+    <string name="signin_link"><u>Sign in here</u></string>
+    <string name="signup_link"><u>Create account here</u></string>
+    <string name="create_new_tour">create new tour <![CDATA[<font color=\'#203DD1\'><u> here </u></font>]]> </string>
+    <string name="see_listed_tour">or see listed tour  <![CDATA[<font color=\'#203DD1\'><u> here </u></font>]]> </string>
+    <string name="some_text"><![CDATA[<font color=\'#cc0029\'>Some</font> random <font color=\'#ffcc00\'>text</font>]]></string>
+
+    <!--Firebase string-->
+    <string name="auth_failed">Failed to Authenticate</string>
+    <string name="auth_success">Authentication Succes</string>
+
 </resources>

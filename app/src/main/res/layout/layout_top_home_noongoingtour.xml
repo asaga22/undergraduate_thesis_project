@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+        android:id="@+id/homeNoTourLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/backgroundColor"
+        android:layout_marginBottom="50dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="100"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="40"
+                android:background="@drawable/gradient_blue_header_bg">
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/relLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp">
+
+                <TextView
+                    android:id="@+id/greetingNothing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Good Evening, Martha"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/mregular"
+                    android:layout_marginBottom="5dp"/>
+
+                <ImageView
+                    android:id="@+id/dots"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_yellow_ellipsies"
+                    android:layout_below="@id/greetingNothing"/>
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_one_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/white_rounded_corner"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="15dp"
+                    android:layout_below="@id/dots"
+                    android:elevation="10dp"
+                    app:cardElevation="10dp"
+                    app:cardCornerRadius="10dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingTop="50dp"
+                        android:paddingBottom="50dp"
+                        android:paddingEnd="20dp"
+                        android:paddingStart="20dp">
+
+                        <ImageView
+                            android:id="@+id/illustration"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:src="@drawable/nothing"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@id/illustration"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="There is no active tour here..."
+                                android:textSize="18sp"
+                                android:textColor="@color/black"
+                                android:textAlignment="textEnd"
+                                android:layout_marginBottom="20dp"/>
+
+                            <TextView
+                                android:id="@+id/createNewTourLink"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/defaultGrey"
+                                android:text="@string/create_new_tour"
+                                android:textSize="16sp"
+                                android:layout_marginBottom="5dp"
+                                android:textAlignment="textEnd"/>
+
+                            <TextView
+                                android:id="@+id/seeListedTourLink"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/defaultGrey"
+                                android:text="@string/see_listed_tour"
+                                android:textSize="16sp"
+                                android:textAlignment="textEnd"/>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </RelativeLayout>
+
+
+        </FrameLayout>
+
+    </RelativeLayout>
+</merge>

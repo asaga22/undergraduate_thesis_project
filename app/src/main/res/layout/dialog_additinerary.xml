@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_rounded_corner"
+    android:elevation="10dp">
+
+    <RelativeLayout
+        android:id="@id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/closeDialogAddItinerary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close_grey"
+            android:layout_alignParentRight="true"
+            android:layout_margin="5dp"/>
+        <TextView
+            android:id="@+id/modalTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add New Activity to Itinerary"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/mmedium"
+            android:layout_below="@id/closeDialogAddItinerary"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:background="@color/white"
+        android:layout_marginTop="10dp"
+        android:id="@+id/addItinerarytForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@id/topbar"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/softGrey"
+            android:layout_marginBottom="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            android:layout_marginBottom="10dp">
+
+            <!--Date-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="50"
+                android:layout_marginRight="20dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Date"
+                    android:layout_marginBottom="5dp"/>
+                <EditText
+                    android:id="@+id/inputDateActivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:hint="DD/MM/YYYY"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:textSize="14sp"
+                    android:background="@drawable/softgrey_rounded_corner_lightgrey_outline"/>
+            </LinearLayout>
+
+            <!-- End Time -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="50"
+                android:gravity="end"
+                android:layout_marginLeft="20dp">
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <!--Start Time-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="50"
+                android:layout_marginRight="20dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Start Date"
+                    android:layout_marginBottom="5dp"/>
+                <EditText
+                    android:id="@+id/inputStartTimeActivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:hint="HH:MM"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:textSize="14sp"
+                    android:background="@drawable/softgrey_rounded_corner_lightgrey_outline"/>
+            </LinearLayout>
+
+            <!-- End Time -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="50"
+                android:gravity="end"
+                android:layout_marginLeft="20dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Start Time"
+                    android:layout_marginBottom="5dp"/>
+                <EditText
+                    android:id="@+id/inputEndTimeActivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:hint="HH:MM"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:textSize="14sp"
+                    android:background="@drawable/softgrey_rounded_corner_lightgrey_outline"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"/>
+
+        <EditText
+            android:id="@+id/activityDescription"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/softgrey_rounded_corner_lightgrey_outline"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="14sp"
+            android:hint="Activity Description"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/softGrey"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/addActivityItinerary"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Add Activity"
+        android:layout_below="@id/addItinerarytForm"
+        android:layout_alignParentRight="true"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:textSize="14sp"
+        android:layout_margin="20dp"
+        android:textAllCaps="false"
+        android:background="@drawable/primaryblue_rounded_corner"
+        android:elevation="10dp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/mmedium"
+        android:layout_marginBottom="20dp" />
+
+</RelativeLayout>

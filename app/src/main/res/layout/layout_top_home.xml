@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+        android:id="@+id/homeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/backgroundColor"
+        android:layout_marginBottom="50dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="100"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="40"
+                android:background="@drawable/gradient_blue_header_bg">
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/relLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp">
+
+                <TextView
+                    android:id="@+id/greeting"
+                    android:layout_width="match_parent"
+                    android:textAlignment="center"
+                    android:layout_height="wrap_content"
+                    android:text="Good Evening, "
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/mregular"
+                    android:layout_marginBottom="5dp"/>
+
+                <ImageView
+                    android:id="@+id/dots"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_yellow_ellipsies"
+                    android:layout_below="@id/greeting"/>
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_one_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/white_rounded_corner"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="15dp"
+                    android:layout_below="@id/dots"
+                    android:elevation="10dp"
+                    app:cardElevation="10dp"
+                    app:cardCornerRadius="10dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:id="@+id/statusTourHome"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Ongoing Tour"
+                            android:layout_marginBottom="10dp"
+                            android:fontFamily="@font/mmedium"
+                            android:textSize="12sp"
+                            android:textColor="@color/blueSecondary"/>
+
+                        <TextView
+                            android:id="@+id/tourTitleHome"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="5D4N FASILKOM ESA UNGGUL OUTING"
+                            android:layout_below="@id/statusTourHome"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/mmedium"
+                            android:layout_marginBottom="10dp"/>
+
+                        <LinearLayout
+                            android:id="@+id/dateRangeInTourDetails"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_below="@+id/tourTitleHome"
+                            android:gravity="center"
+                            android:layout_marginBottom="20dp">
+                            <TextView
+                                android:id="@+id/startDateInHome"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="12 AUG 2020"/>
+                            <View
+                                android:layout_width="2dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/softGrey"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginLeft="10dp"/>
+                            <TextView
+                                android:id="@+id/endDateInHome"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="12 AUG 2020"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_below="@id/dateRangeInTourDetails"
+                            android:padding="20dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="100"
+                                android:paddingEnd="10dp"
+                                android:paddingStart="10dp">
+
+                                <RelativeLayout
+                                    android:id="@+id/homeMap"
+                                    android:layout_width="0dp"
+                                    android:layout_height="100dp"
+                                    android:layout_weight="50"
+                                    android:background="@drawable/soft_blue_rectanngle_rounded_corner"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp">
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Maps"
+                                        android:drawableTop="@drawable/ic_maps"
+                                        android:textAlignment="center"
+                                        android:layout_centerVertical="true"
+                                        android:textColor="@color/black"/>
+                                </RelativeLayout>
+
+                                <RelativeLayout
+                                    android:id="@+id/homeDiscussion"
+                                    android:layout_width="0dp"
+                                    android:layout_height="100dp"
+                                    android:layout_weight="50"
+                                    android:background="@drawable/soft_blue_rectanngle_rounded_corner"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp">
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Discussion"
+                                        android:drawableTop="@drawable/ic_chat"
+                                        android:textAlignment="center"
+                                        android:layout_centerVertical="true"
+                                        android:textColor="@color/black"/>
+                                </RelativeLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="100"
+                                android:paddingEnd="10dp"
+                                android:paddingStart="10dp"
+                                android:layout_marginTop="20dp">
+
+                                <RelativeLayout
+                                    android:id="@+id/homeItinerary"
+                                    android:layout_width="0dp"
+                                    android:layout_height="100dp"
+                                    android:layout_weight="50"
+                                    android:background="@drawable/soft_blue_rectanngle_rounded_corner"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp">
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Itineraries"
+                                        android:drawableTop="@drawable/ic_itinerary"
+                                        android:textAlignment="center"
+                                        android:layout_centerVertical="true"
+                                        android:textColor="@color/black"/>
+                                </RelativeLayout>
+
+                                <RelativeLayout
+                                    android:id="@+id/homeParticipant"
+                                    android:layout_width="0dp"
+                                    android:layout_height="100dp"
+                                    android:layout_weight="50"
+                                    android:background="@drawable/soft_blue_rectanngle_rounded_corner"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp">
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Participants"
+                                        android:drawableTop="@drawable/ic_group"
+                                        android:textAlignment="center"
+                                        android:layout_centerVertical="true"
+                                        android:textColor="@color/black"/>
+                                </RelativeLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </RelativeLayout>
+
+
+        </FrameLayout>
+
+    </RelativeLayout>
+</merge>

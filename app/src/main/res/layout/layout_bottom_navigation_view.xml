@@ -1,0 +1,34 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/bottomNavViewBar"
+            android:background="@color/white"
+            app:menu="@menu/bottom_navigation_menu"
+            android:layout_alignParentBottom="true"
+            android:elevation="10dp">
+
+        </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+        <ImageView
+            android:layout_centerVertical="true"
+            android:id="@+id/ic_add"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/white_circle"
+            android:src="@drawable/ic_add"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:elevation="15dp"
+            android:padding="10dp"/>
+
+    </RelativeLayout>
+
+</merge>

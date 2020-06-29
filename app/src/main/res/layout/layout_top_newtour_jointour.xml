@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/backgroundColor">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/backgroundColor"
+            android:layout_marginBottom="50dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:background="@drawable/gradient_blue_header_bg">
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:id="@+id/relLayout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp">
+
+                    <TextView
+                        android:id="@+id/newTour"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:fontFamily="@font/mregular"
+                        android:text="Join Group Tour"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/dots"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/newTour"
+                        android:src="@drawable/ic_yellow_ellipsies" />
+
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_one_login"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/dots"
+                        android:layout_centerHorizontal="true"
+                        android:layout_margin="15dp"
+                        android:background="@drawable/white_rounded_corner"
+                        android:elevation="5dp"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="5dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="40dp"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="20dp"
+                            android:paddingBottom="40dp">
+
+                            <TextView
+                                android:id="@+id/formBasicInfo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:fontFamily="@font/mmedium"
+                                android:text="Insert Group Tour Id to join\nExample: GT9087690"
+                                android:textColor="@color/black"
+                                android:textSize="14sp"
+                                android:textAlignment="center"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/formBasicInfo"
+                                android:elevation="2dp"
+                                android:orientation="vertical">
+
+                                <!--input title-->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="20dp"
+                                    android:layout_marginTop="20dp"
+                                    android:layout_marginRight="20dp"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="5dp"
+                                        android:text="Tour Id" />
+
+                                    <EditText
+                                        android:id="@+id/inputTourId"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="40dp"
+                                        android:paddingLeft="10dp"
+                                        android:paddingRight="10dp"
+                                        android:background="@drawable/softgrey_rounded_corner_lightgrey_outline" />
+
+                                </LinearLayout>
+
+                                <!--button continue-->
+
+                                <Button
+                                    android:id="@+id/btnSendRequest"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="20dp"
+                                    android:background="@drawable/toscagreen_rounded_corner"
+                                    android:paddingStart="40dp"
+                                    android:paddingEnd="40dp"
+                                    android:text="Send Request"
+                                    android:elevation="5dp"
+                                    android:textAllCaps="false"
+                                    android:textColor="#fff"
+                                    android:textSize="15sp"
+                                    android:layout_gravity="center"/>
+
+                            </LinearLayout>
+
+
+                        </RelativeLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                </RelativeLayout>
+
+
+            </FrameLayout>
+
+        </RelativeLayout>
+    </ScrollView>
+</merge>
+
