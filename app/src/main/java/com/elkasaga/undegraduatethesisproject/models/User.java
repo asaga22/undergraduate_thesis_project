@@ -35,18 +35,6 @@ public class User implements Parcelable {
         category = in.readLong();
     }
 
-    public static final Creator<User> CREATOR = new Creator<User>() {
-        @Override
-        public User createFromParcel(Parcel in) {
-            return new User(in);
-        }
-
-        @Override
-        public User[] newArray(int size) {
-            return new User[size];
-        }
-    };
-
     public String getUid() {
         return uid;
     }
@@ -77,6 +65,14 @@ public class User implements Parcelable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public long getOngoingtour() {
@@ -111,13 +107,22 @@ public class User implements Parcelable {
         this.category = category;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public static Creator<User> getCREATOR() {
+        return CREATOR;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
 
     @Override
     public int describeContents() {

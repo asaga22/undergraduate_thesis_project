@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rel"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/gradient_blue_header_bg"
+        android:elevation="5dp"
+        android:layout_marginBottom="10dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notification"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:fontFamily="@font/mregular"/>
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dp"
+        android:layout_below="@id/rel">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listedNotifContainer">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </ScrollView>
+
+    <include layout="@layout/layout_bottom_navigation_view"/>
+
+</RelativeLayout>

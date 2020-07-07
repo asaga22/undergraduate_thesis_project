@@ -123,7 +123,7 @@ public class TourDetailsActivity extends AppCompatActivity {
                     //simpan touid basic info (key) ke local
                     SharedPreferences sharedPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("toutitle", gt.getTourtitle());
+                    editor.putString("tourtitle", gt.getTourtitle());
                     editor.putString("tourid", gt.getTourid());
                     editor.putString("startdate", gt.getStartdate());
                     editor.putString("enddate", gt.getEndate());

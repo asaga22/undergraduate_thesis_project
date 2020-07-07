@@ -43,6 +43,7 @@
         <activity android:name=".activities.Tours.TourDetailsDiscussionActivity"/>
         <activity android:name=".activities.Tours.TourDetailsMapsActivity"/>
         <activity android:name=".activities.Account.EditAccountActivity"/>
+        <activity android:name=".activities.Tours.Foregoing.ToursForegoingActivity"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

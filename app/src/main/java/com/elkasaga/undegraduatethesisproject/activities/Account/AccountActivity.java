@@ -23,6 +23,9 @@ import com.elkasaga.undegraduatethesisproject.utils.BottomNavigationViewHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.LabelVisibilityMode;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.squareup.picasso.Picasso;
 
 public class AccountActivity extends AppCompatActivity {
@@ -32,6 +35,8 @@ public class AccountActivity extends AppCompatActivity {
     private static final int ACTIVITY_NUM = 4;
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+
 
     private String uid, fullname, ava;
     private long category, on, up, fore;
@@ -106,6 +111,14 @@ public class AccountActivity extends AppCompatActivity {
         mProgressBar.setVisibility(View.GONE);
         mPleaseWait.setVisibility(View.GONE);
     }
+
+//    private void getUserUpcomingTour(){
+//        Query upcomingRef = mDb.collection("UserTour")
+//                .document(uid)
+//                .collection("GroupTour")
+//                .whereEqualTo("tourstatus", 2);
+//        upcomingRef.addSnapshotListener(new E)
+//    }
 
     private void getUserDetailsFromPreference(){
         SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);

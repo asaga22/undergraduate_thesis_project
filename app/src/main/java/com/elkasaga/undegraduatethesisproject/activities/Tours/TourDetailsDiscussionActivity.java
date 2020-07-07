@@ -143,6 +143,7 @@ public class TourDetailsDiscussionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 insertNewMessage();
+                clearMessage();
             }
         });
     }

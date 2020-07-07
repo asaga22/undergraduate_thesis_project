@@ -5,20 +5,24 @@ import com.google.firebase.firestore.GeoPoint;
 public class Participant {
 
     String uid, username, fullname, avatar;
-    long is_present, is_represent;
-    GeoPoint geoPoint;
+    long category;
+    boolean present, represent;
 
-    public Participant(String uid, String username, String fullname, long is_present, long is_represent, GeoPoint geoPoint, String avatar) {
+    public Participant(String uid, String username, String fullname, String avatar, long category, boolean present, boolean represent) {
         this.uid = uid;
         this.username = username;
         this.fullname = fullname;
-        this.is_present = is_present;
-        this.is_represent = is_represent;
-        this.geoPoint = geoPoint;
         this.avatar = avatar;
+        this.category = category;
+        this.present = present;
+        this.represent = represent;
     }
 
     public Participant() {
+    }
+
+    public Participant(String uid) {
+        this.uid = uid;
     }
 
     public String getUid() {
@@ -45,35 +49,35 @@ public class Participant {
         this.fullname = fullname;
     }
 
-    public long getIs_present() {
-        return is_present;
-    }
-
-    public void setIs_present(long is_present) {
-        this.is_present = is_present;
-    }
-
-    public long getIs_represent() {
-        return is_represent;
-    }
-
-    public void setIs_represent(long is_represent) {
-        this.is_represent = is_represent;
-    }
-
-    public GeoPoint getGeoPoint() {
-        return geoPoint;
-    }
-
-    public void setGeoPoint(GeoPoint geoPoint) {
-        this.geoPoint = geoPoint;
-    }
-
     public String getAvatar() {
         return avatar;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public long getCategory() {
+        return category;
+    }
+
+    public void setCategory(long category) {
+        this.category = category;
+    }
+
+    public boolean isPresent() {
+        return present;
+    }
+
+    public void setPresent(boolean present) {
+        this.present = present;
+    }
+
+    public boolean isRepresent() {
+        return represent;
+    }
+
+    public void setRepresent(boolean represent) {
+        this.represent = represent;
     }
 }

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/relLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/gradient_blue_header_bg">
+
+        <LinearLayout
+            android:id="@+id/topbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp">
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginEnd="16dp"
+                android:id="@+id/backArrowInTourDetailsForegoing"
+                android:src="@drawable/ic_backarrow"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tour Details"
+                android:textSize="16sp"
+                android:fontFamily="@font/mmedium"
+                android:textColor="@color/white"
+                android:layout_marginStart="5dp"
+                android:id="@+id/options"/>
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tourTitleInTourDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="5D4N Fasilkom Tour to Lombok"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/topbar"
+            android:fontFamily="@font/mregular"/>
+
+        <ImageView
+            android:id="@+id/dots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_yellow_ellipsies"
+            android:layout_below="@id/tourTitleInTourDetails"/>
+
+        <TextView
+            android:id="@+id/tourIdInTourDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TOUR ID GT123456"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/mlight"
+            android:textStyle="bold"
+            android:layout_below="@id/dots"/>
+
+        <LinearLayout
+            android:id="@+id/dateRangeInTourDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/tourIdInTourDetails"
+            android:gravity="center"
+            android:layout_marginBottom="20dp">
+            <TextView
+                android:id="@+id/startDateInHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12 AUG 2020"
+                android:textColor="@color/white"/>
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/softGrey"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"/>
+            <TextView
+                android:id="@+id/endDateInHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12 AUG 2020"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</merge>

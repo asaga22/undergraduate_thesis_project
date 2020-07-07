@@ -29,6 +29,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -40,8 +41,8 @@ public class LocationService extends Service {
     private static final String TAG = "LocationService";
 
     private FusedLocationProviderClient mFusedLocationClient;
-    private final static long UPDATE_INTERVAL = 4 * 1000;  /* 4 secs */
-    private final static long FASTEST_INTERVAL = 2000; /* 2 sec */
+    private final static long UPDATE_INTERVAL = 15 * 1000;  /* 15 secs */
+    private final static long FASTEST_INTERVAL = 8000; /* 2 sec */
 
     @Nullable
     @Override
@@ -126,9 +127,21 @@ public class LocationService extends Service {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
-                        Log.d(TAG, "onComplete: \ninserted user location into database." +
-                                "\n latitude: " + userLocation.getGeoPoint().getLatitude() +
-                                "\n longitude: " + userLocation.getGeoPoint().getLongitude());
+                        //update pax loc in Ongoing GT
+                        DocumentReference paxLocs = FirebaseFirestore.getInstance().collection("GroupTour")
+                                .document( ((UserClient)getApplicationContext()).getGroupTour().getTourid() )
+                                .collection("ParticipantLocation").document(FirebaseAuth.getInstance().getUid());
+                        paxLocs.set(userLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()){
+                                    Log.d(TAG, "onComplete: \ninserted user location into database." +
+                                            "\n latitude: " + userLocation.getGeoPoint().getLatitude() +
+                                            "\n longitude: " + userLocation.getGeoPoint().getLongitude());
+                                }
+                            }
+                        });
+
                     }
                 }
             });

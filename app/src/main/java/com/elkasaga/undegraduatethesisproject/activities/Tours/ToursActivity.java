@@ -7,27 +7,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.elkasaga.undegraduatethesisproject.R;
 import com.elkasaga.undegraduatethesisproject.models.GroupTour;
 import com.elkasaga.undegraduatethesisproject.utils.BottomNavigationViewHelper;
 import com.elkasaga.undegraduatethesisproject.utils.ListedToursAdapter;
+import com.elkasaga.undegraduatethesisproject.utils.SectionsPagerAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.LabelVisibilityMode;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -38,12 +38,6 @@ public class ToursActivity extends AppCompatActivity {
     private Context mContext = ToursActivity.this;
     private static final int ACTIVITY_NUM = 1;
     ImageView more;
-    RecyclerView listedToursContainer;
-    ArrayList<GroupTour> listedTour;
-    ListedToursAdapter groupTourAdapter;
-
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore mDb;
 
     String uid;
     long category;
@@ -54,43 +48,28 @@ public class ToursActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tours);
         setupBottomNavigationView();
-        mDb = FirebaseFirestore.getInstance();
-        getUserDetailsFromPreference();
-        initListedToursRecyclerView();
+        setupViewPager();
 
     }
 
-    private void initListedToursRecyclerView(){
+    /*
+     * Responsible for adding 3 tabs: camera, home, and messages
+     */
+    private void setupViewPager() {
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        ViewPager viewPager = (ViewPager) findViewById(R.id.container);
+        adapter.addFragment(new UpcomingTourFragment());
+        adapter.addFragment(new ForegoingTourFragment());
 
-        listedTour = new ArrayList<GroupTour>();
-        listedToursContainer = (RecyclerView) findViewById(R.id.listedUpcoming);
-        listedToursContainer.setLayoutManager(new LinearLayoutManager(this));
+        viewPager.setAdapter(adapter);
 
-        Query userTourRef = mDb
-                .collection("UserTour")
-                .document(uid).collection("GroupTour").whereEqualTo("tourstatus", 2);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
 
-        userTourRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots.size() != 0){
-                    for (int i = 0; i < queryDocumentSnapshots.size(); i++){
-                        GroupTour gt = queryDocumentSnapshots.getDocuments().get(i).toObject(GroupTour.class);
-                        listedTour.add(gt);
-                        Log.d(TAG, "TOURTITLE "+i+" "+gt.getTourtitle()+" | STATUS = "+gt.getTourstatus());
-                    }
-                    groupTourAdapter = new ListedToursAdapter(ToursActivity.this, listedTour);
-                    listedToursContainer.setAdapter(groupTourAdapter);
-                }
-            }
-        });
+        tabLayout.getTabAt(0).setText("Upcoming Tour");
+        tabLayout.getTabAt(1).setText("Tour History");
     }
 
-    private void getUserDetailsFromPreference(){
-        SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
-        uid = sharedPreferences.getString("uid", "");
-        category = sharedPreferences.getLong("category", 0);
-    }
 
     /*
      * Bottom Navigation Setup

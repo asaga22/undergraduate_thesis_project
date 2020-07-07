@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <merge xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <RelativeLayout
@@ -7,65 +6,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/backgroundColor">
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/relLayoutTopBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:background="@drawable/gradient_blue_header_bg">
-            <RelativeLayout
-                android:id="@+id/topbar"
-                android:layout_width="match_parent"
+            android:background="@drawable/gradient_blue_header_bg"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp">
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="Listed Upcoming Tours"
-                    android:textSize="20sp"
-                    android:textColor="@color/white"
-                    android:layout_marginStart="20sp"
-                    android:fontFamily="@font/mmedium"
-                    android:id="@+id/profileName"/>
+                android:layout_centerVertical="true"
+                android:text="Listed Tours"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:layout_marginStart="18sp"
+                android:fontFamily="@font/mregular"
+                android:textStyle="bold"
+                android:id="@+id/profileName"/>
+        </LinearLayout>
 
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginEnd="20dp"
-                    android:layout_centerVertical="true"
-                    android:id="@+id/moreTourHistory"
-                    android:src="@drawable/ic_more_horiz"/>
-
-            </RelativeLayout>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@drawable/white_rounded_corner_softgrey_outline"
-                android:layout_below="@id/topbar"
-                android:layout_marginBottom="20dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginStart="30dp"/>
-        </RelativeLayout>
-
-        <ScrollView
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:id="@+id/layTab"
+            android:layout_below="@id/relLayoutTopBar"
             android:layout_width="match_parent"
-            android:layout_marginBottom="50dp"
-            android:layout_below="@id/relLayoutTopBar">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listedUpcoming"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp">
-
-            </androidx.recyclerview.widget.RecyclerView>
-        </ScrollView>
+            android:layout_height="wrap_content">
+            <include layout="@layout/layout_top_tabs"/>
+        </LinearLayout>
     </RelativeLayout>
 
 </merge>

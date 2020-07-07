@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.elkasaga.undegraduatethesisproject.OngoingTour;
 import com.elkasaga.undegraduatethesisproject.R;
 import com.elkasaga.undegraduatethesisproject.UserClient;
 import com.elkasaga.undegraduatethesisproject.activities.Home.HomeActivity;
@@ -86,60 +87,97 @@ public class SigninActivity extends AppCompatActivity {
                     mProgressBar.setVisibility(View.VISIBLE);
                     pleaseWait.setVisibility(View.VISIBLE);
                     mAuth.signInWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(SigninActivity.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        // Sign in success, update UI with the signed-in user's information
-                                        Log.d(TAG, "signInWithEmail:success");
-                                        FirebaseUser user = mAuth.getCurrentUser();
-                                        Toast.makeText(mContext, getString(R.string.auth_success),
-                                                Toast.LENGTH_SHORT).show();
-                                        mProgressBar.setVisibility(View.GONE);
-                                        pleaseWait.setVisibility(View.GONE);
+                        .addOnCompleteListener(SigninActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d(TAG, "signInWithEmail:success");
+                                FirebaseUser user = mAuth.getCurrentUser();
 
-                                        DocumentReference userRef = mDb.collection("Users").document(FirebaseAuth.getInstance().getUid());
-                                        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                if (task.isSuccessful()){
-                                                    Log.d(TAG, "onComplete: successfully get the  user details.");
-                                                    User user = task.getResult().toObject(User.class);
-                                                    //simpan username (key) ke local
-                                                    SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
-                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                    editor.putString("uid", user.getUid());
-                                                    editor.putString("fullname", user.getFullname());
-                                                    editor.putString("username", user.getUsername());
-                                                    editor.putString("email", user.getEmail());
-                                                    editor.putLong("ongoingtour", user.getOngoingtour());
-                                                    editor.putLong("foregoingtour", user.getForegoingtour());
-                                                    editor.putLong("upcomingtour", user.getUpcomingtour());
-                                                    editor.putLong("category", user.getCategory());
-                                                    editor.putString("avatar", user.getAvatar());
-                                                    editor.apply();
+                                //retrieve authenticated user data from db
+                                DocumentReference userRef = mDb.collection("Users").document(FirebaseAuth.getInstance().getUid());
+                                userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()){
+                                            Log.d(TAG, "onComplete: successfully get the  user details.");
+                                            User user = task.getResult().toObject(User.class);
+                                            //save authenticated user data to local preferences
+                                            SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                                            editor.putString("uid", user.getUid());
+                                            editor.putString("fullname", user.getFullname());
+                                            editor.putString("username", user.getUsername());
+                                            editor.putString("email", user.getEmail());
+                                            editor.putLong("ongoingtour", user.getOngoingtour());
+                                            editor.putLong("foregoingtour", user.getForegoingtour());
+                                            editor.putLong("upcomingtour", user.getUpcomingtour());
+                                            editor.putLong("category", user.getCategory());
+                                            editor.putString("avatar", user.getAvatar());
+                                            editor.apply();
 
+                                            //query to find whether authenticated user has tour going on
+                                            Query otRef = mDb
+                                                    .collection("UserTour")
+                                                    .document(FirebaseAuth.getInstance().getUid())
+                                                    .collection("GroupTour")
+                                                    .whereEqualTo("tourstatus", 1);
+                                            otRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                                    if (queryDocumentSnapshots.size() != 0){
+                                                        GroupTour gt = queryDocumentSnapshots.getDocuments().get(0).toObject(GroupTour.class);
+                                                        SharedPreferences isOngoingPreferences = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
+                                                        SharedPreferences.Editor editorIsOngoing = isOngoingPreferences.edit();
+                                                        editorIsOngoing.putBoolean("isongoing", true);
+                                                        editorIsOngoing.apply();
+
+                                                        //simpan ongoing gt (key) ke local
+                                                        SharedPreferences sharedPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
+                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                        editor.putString("tourtitle", gt.getTourtitle());
+                                                        editor.putString("tourid", gt.getTourid());
+                                                        editor.putString("startdate", gt.getStartdate());
+                                                        editor.putString("enddate", gt.getEndate());
+                                                        editor.putString("starttime", gt.getStarttime());
+                                                        editor.putString("endtime", gt.getEndtime());
+                                                        editor.putLong("tourstatus", gt.getTourstatus());
+                                                        editor.putString("tourleader", gt.getTourleader());
+                                                        editor.apply();
+                                                        ((UserClient)getApplicationContext()).setGroupTour(gt);
+                                                        Toast.makeText(mContext, getString(R.string.auth_success), Toast.LENGTH_SHORT).show();
+                                                    } else{
+                                                        SharedPreferences isOngoingPreferences = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
+                                                        SharedPreferences.Editor editorIsOngoing = isOngoingPreferences.edit();
+                                                        editorIsOngoing.putBoolean("isongoing", false);
+                                                        editorIsOngoing.apply();
+                                                    }
                                                     //navigate to home if authentication success
+                                                    mProgressBar.setVisibility(View.GONE);
+                                                    pleaseWait.setVisibility(View.GONE);
                                                     Intent toHome = new Intent(mContext, HomeActivity.class);
                                                     startActivity(toHome);
                                                     finish();
-
                                                 }
-                                            }
-                                        });
+                                            });
 
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                        Toast.makeText(mContext, getString(R.string.auth_failed),
-                                                Toast.LENGTH_SHORT).show();
-                                        mProgressBar.setVisibility(View.GONE);
-                                        pleaseWait.setVisibility(View.GONE);
+                                        }
                                     }
+                                });
 
-                                    // ...
-                                }
-                            });
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                Toast.makeText(mContext, getString(R.string.auth_failed),
+                                        Toast.LENGTH_SHORT).show();
+                                mProgressBar.setVisibility(View.GONE);
+                                pleaseWait.setVisibility(View.GONE);
+                            }
+
+                            // ...
+                            }
+                        });
                 }
 
             }

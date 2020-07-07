@@ -49,6 +49,10 @@ dependencies {
     //Maps
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
+    //Google Directions
+    implementation 'com.google.maps:google-maps-services:0.2.11'
+    implementation 'org.slf4j:slf4j-nop:1.7.25'
+
     //Google map utils for clustering
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
 }

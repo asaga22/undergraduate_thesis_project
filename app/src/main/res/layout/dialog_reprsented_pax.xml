@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_rounded_corner"
+    android:elevation="5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:id="@id/topbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/closeDialogRepPax"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_close_grey"
+                android:layout_alignParentRight="true"
+                android:layout_margin="5dp"/>
+            <TextView
+                android:id="@+id/modalTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Represented Participant"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/mmedium"
+                android:textStyle="bold"
+                android:layout_below="@id/closeDialogRepPax"/>
+            <View
+                android:layout_below="@id/modalTitle"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/softGrey"
+                android:layout_marginBottom="10dp"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/descRepPaxDialog"
+            android:layout_below="@id/topbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Type the full name of participant \nrepresented by this user"
+            android:textAlignment="center"/>
+
+        <EditText
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_below="@id/descRepPaxDialog"
+            android:id="@+id/inputRepresentedName"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:drawableLeft="@drawable/ic_person_darkgrey"
+            android:hint="Full Name"
+            android:background="@drawable/softgrey_rounded_corner_lightgrey_outline"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
+
+        <View
+            android:layout_below="@id/inputRepresentedName"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/softGrey"
+            android:layout_marginBottom="10dp"/>
+
+        <Button
+            android:id="@+id/addRepresented"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Add Represented"
+            android:layout_below="@id/inputRepresentedName"
+            android:layout_alignParentRight="true"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:textSize="14sp"
+            android:layout_margin="10dp"
+            android:textAllCaps="false"
+            android:background="@drawable/primaryblue_rounded_corner"
+            android:elevation="5dp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/mmedium"
+            android:layout_marginBottom="20dp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        android:layout_centerVertical="true">
+        <ProgressBar
+            android:id="@+id/progressBarAddRepPax"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:indeterminateTint="@color/lightGrey"/>
+
+        <TextView
+            android:id="@+id/pleaseWaitAddRepPax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please \nwait.."
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

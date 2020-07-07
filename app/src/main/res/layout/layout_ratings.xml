@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:id="@+id/noRatedRel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/noRatedTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="You have not rate this tour yet"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/mmedium"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="20dp"/>
+                <LinearLayout
+                    android:id="@+id/ln1"
+                    android:layout_below="@id/noRatedTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Rate the Tour"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/mmedium"
+                        android:layout_marginBottom="10dp"/>
+                    <androidx.appcompat.widget.AppCompatRatingBar
+                        android:id="@+id/rateTheTour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:rating="0"
+                        android:scaleX=".7"
+                        android:scaleY=".7"
+                        android:transformPivotX="0dp"
+                        android:transformPivotY="0dp"
+                        android:layout_centerHorizontal="true"
+                        android:progressTint="@color/yellow" />
+                    <EditText
+                        android:id="@+id/aboutTheTour"
+                        android:layout_marginTop="-10dp"
+                        android:textColor="@color/defaultGrey"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:hint="Say Something about the tour..."
+                        android:background="@drawable/white_rounded_corner_grey_outline"
+                        android:padding="5dp"
+                        android:textSize="14sp"
+                        android:inputType="text|textMultiLine"
+                        android:gravity="top"/>
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/lineNoRated"
+                    android:layout_below="@+id/ln1"
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/softGrey"/>
+
+                <LinearLayout
+                    android:id="@+id/ln2"
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@id/lineNoRated"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Rate the Tour Leader"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/mmedium"
+                        android:layout_marginBottom="10dp"/>
+                    <androidx.appcompat.widget.AppCompatRatingBar
+                        android:id="@+id/rateTheTourLeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:rating="0"
+                        android:scaleX=".7"
+                        android:scaleY=".7"
+                        android:transformPivotX="0dp"
+                        android:transformPivotY="0dp"
+                        android:layout_centerHorizontal="true"
+                        android:progressTint="@color/yellow"/>
+                    <EditText
+                        android:id="@+id/aboutTheTourLeader"
+                        android:layout_marginTop="-10dp"
+                        android:textColor="@color/defaultGrey"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:hint="Say Something about the tour leader..."
+                        android:background="@drawable/white_rounded_corner_grey_outline"
+                        android:padding="5dp"
+                        android:textSize="14sp"
+                        android:inputType="text|textMultiLine"
+                        android:gravity="top"/>
+                </LinearLayout>
+                <Button
+                    android:id="@+id/btnSubmitRating"
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@id/ln2"
+                    android:layout_width="120dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/toscagreen_rounded_corner"
+                    android:text="Submit"
+                    android:textAllCaps="false"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/mregular"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:elevation="5dp"
+                    android:layout_marginBottom="100dp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/ratedRel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/overall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="Overall Rating"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/mmedium"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="5dp"/>
+
+                <TextView
+                    android:layout_below="@id/overall"
+                    android:id="@+id/ratedOverallTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="You rated 4.5 out 5 "
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/mregular"
+                    android:textColor="@color/defaultGrey"/>
+
+                <androidx.appcompat.widget.AppCompatRatingBar
+                    android:id="@+id/ratedOverallBar"
+                    android:layout_below="@id/ratedOverallTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:rating="0"
+                    android:layout_centerHorizontal="true"
+                    android:theme="@style/Widget.AppCompat.RatingBar"
+                    style="@style/Widget.AppCompat.RatingBar"
+                    android:scaleX=".7"
+                    android:scaleY=".7"
+                    android:transformPivotX="120dp"
+                    android:transformPivotY="0dp"
+                    android:progressTint="@color/yellow"
+                    android:clickable="false"
+                    android:focusableInTouchMode="false"
+                    android:focusable="false"
+                    android:isIndicator="true"/>
+
+                <LinearLayout
+                    android:id="@+id/forTheTour"
+                    android:layout_below="@id/ratedOverallBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="For the Tour"
+                        android:textStyle="bold"
+                        android:textColor="@color/defaultGrey"
+                        android:textSize="14sp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/ratedTourTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="You rate 4.5"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/mregular"
+                            android:textColor="@color/defaultGrey"
+                            android:paddingRight="20dp"/>
+                        <androidx.appcompat.widget.AppCompatRatingBar
+                            android:id="@+id/ratedTour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:numStars="5"
+                            style="@style/Widget.AppCompat.RatingBar.Small"
+                            android:rating="0"
+                            android:progressTint="@color/yellow"
+                            android:clickable="false"
+                            android:focusableInTouchMode="false"
+                            android:focusable="false"
+                            android:isIndicator="true"/>
+                    </LinearLayout>
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="You say"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/mregular"
+                            android:textColor="@color/defaultGrey"
+                            android:paddingRight="55dp"/>
+                        <TextView
+                            android:id="@+id/aboutRatedTour"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/line"
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@id/forTheTour"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/softGrey"/>
+
+                <LinearLayout
+                    android:layout_below="@id/line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="For the Tour Leader"
+                        android:textStyle="bold"
+                        android:textColor="@color/defaultGrey"
+                        android:textSize="14sp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/ratedTourLeaderTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="You rate 4.5"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/mregular"
+                            android:textColor="@color/defaultGrey"
+                            android:paddingRight="20dp"/>
+                        <androidx.appcompat.widget.AppCompatRatingBar
+                            android:id="@+id/ratedTourLeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:numStars="5"
+                            style="@style/Widget.AppCompat.RatingBar.Small"
+                            android:rating="0"
+                            android:progressTint="@color/yellow"
+                            android:clickable="false"
+                            android:focusableInTouchMode="false"
+                            android:focusable="false"
+                            android:isIndicator="true"/>
+                    </LinearLayout>
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="You say"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/mregular"
+                            android:textColor="@color/defaultGrey"
+                            android:paddingRight="55dp"/>
+                        <TextView
+                            android:id="@+id/aboutRatedTourLeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

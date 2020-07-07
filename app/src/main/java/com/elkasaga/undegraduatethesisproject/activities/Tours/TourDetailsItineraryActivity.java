@@ -62,8 +62,7 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
     Context mContext = TourDetailsItineraryActivity.this;
     final Calendar myCalendar = Calendar.getInstance();
     private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
-    SharedPreferences tourPreference;
-    SharedPreferences isOngoingPreferece;
+    SharedPreferences tourPreference, isOngoingPreferece, userPreferences;
 
     String tourid, tourtitle, startdate, enddate, starttime, endtime, tourleader, status;
     int day;
@@ -84,6 +83,7 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tourdetailsitinerary);
         setupBottomNavigationView();
+        userPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
         tourPreference = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
         tourid = tourPreference.getString("tourid", "");
         isOngoingPreferece = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
@@ -108,30 +108,30 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
                 .orderBy("day", Query.Direction.ASCENDING)
                 .orderBy("indexstarttime", Query.Direction.ASCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @SuppressLint("LongLogTag")
-            @Override
-            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                    @SuppressLint("LongLogTag")
+                    @Override
+                    public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
 
-                if (e != null) {
-                    Log.e(TAG, "onEvent: Listen failed.", e);
-                    return;
-                }
-                if (queryDocumentSnapshots != null){
-
-                    for (int i = 0; i<queryDocumentSnapshots.size(); i++){
-                        Itinerary itinerary = queryDocumentSnapshots.getDocuments().get(i).toObject(Itinerary.class);
-                        if (!mItineraryId.contains(itinerary.getItineraryid())){
-                            mItineraryId.add(itinerary.getItineraryid());
-                            listItinerary.add(itinerary);
-                            Log.d(TAG, "ITIN STAT= "+ itinerary.getItinerarystatus());
+                        if (e != null) {
+                            Log.e(TAG, "onEvent: Listen failed.", e);
+                            return;
                         }
+                        if (queryDocumentSnapshots != null){
+
+                            for (int i = 0; i<queryDocumentSnapshots.size(); i++){
+                                Itinerary itinerary = queryDocumentSnapshots.getDocuments().get(i).toObject(Itinerary.class);
+                                if (!mItineraryId.contains(itinerary.getItineraryid())){
+                                    mItineraryId.add(itinerary.getItineraryid());
+                                    listItinerary.add(itinerary);
+                                    Log.d(TAG, "ITIN STAT= "+ itinerary.getItinerarystatus());
+                                }
+                            }
+                            itineraryAdapter.notifyDataSetChanged();
+
+                        }
+
                     }
-                    itineraryAdapter.notifyDataSetChanged();
-
-                }
-
-            }
-        });
+                });
 
     }
 
@@ -146,11 +146,14 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
     private void initWidgets(){
         addActivity = (ImageView) findViewById(R.id.add_itinerary_icon);
         backarrow = (ImageView) findViewById(R.id.backArrowInListedItinerary);
-        if (isOngoingPreferece.getAll().size() != 0){
-            if (isOngoingPreferece.getBoolean("isongoing", false) == true){
+        if (isOngoingPreferece.getBoolean("isongoing", false)){
+            addActivity.setVisibility(View.GONE);
+        } else {
+            if (userPreferences.getLong("category", 0) == 1){
+                Log.d("TAG", "USER CATEGORY = "+userPreferences.getLong("category", 0));
                 addActivity.setVisibility(View.GONE);
             }
-        }
+         }
     }
 
     private void initBackArrow(){
@@ -185,9 +188,6 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
                         myCalendar.set(Calendar.MONTH, monthOfYear);
                         myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                        if (Calendar.YEAR == 2020 || Calendar.MONTH == Calendar.JUNE || Calendar.DAY_OF_MONTH == 20){
-
-                        }
                         updateLabelDate(inputDate);
                     }
 
@@ -298,7 +298,7 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
     }
 
     private void updateLabelDate(EditText editText) {
-        String myFormat = "dd/MM/yy"; //In which you need put here
+        String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
         inputDate.setText(sdf.format(myCalendar.getTime()));
     }
@@ -309,10 +309,10 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
         editText.setText(sdf.format(myCalendar.getTime()));
     }
 
-    private static ArrayList<String> getDates(String dateString1, String dateString2)
+    public static ArrayList<String> getDates(String dateString1, String dateString2)
     {
         ArrayList<String> dates = new ArrayList<>();
-        String myFormat = "dd/MM/yy";
+        String myFormat = "dd/MM/yyyy";
         SimpleDateFormat df1 = new SimpleDateFormat(myFormat, Locale.getDefault());
 
         Date date1 = null;
@@ -340,7 +340,7 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
         return dates;
     }
 
-    private long determineDay(String selectedDate){
+    public long determineDay(String selectedDate){
         for (int i = 0; i < dates.size(); i++){
             if (dates.get(i).equals(selectedDate)){
                 day = i+1;

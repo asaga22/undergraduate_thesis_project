@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.elkasaga.undegraduatethesisproject.R;
@@ -69,7 +70,7 @@ public class ListedItineraryAdapter extends RecyclerView.Adapter <ListedItinerar
     class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView startTimeInTimeline, endTimeInTimeline, activityDescription, dayNo;
-        RelativeLayout wrapper;
+        CardView wrapper;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);

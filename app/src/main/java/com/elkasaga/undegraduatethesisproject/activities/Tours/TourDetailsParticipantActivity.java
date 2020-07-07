@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.elkasaga.undegraduatethesisproject.R;
 import com.elkasaga.undegraduatethesisproject.models.Participant;
+import com.elkasaga.undegraduatethesisproject.models.RepresentedPassanger;
 import com.elkasaga.undegraduatethesisproject.models.User;
 import com.elkasaga.undegraduatethesisproject.models.UserLocation;
 import com.elkasaga.undegraduatethesisproject.utils.BottomNavigationViewHelper;
@@ -53,7 +55,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TourDetailsParticipantActivity extends AppCompatActivity {
+public class TourDetailsParticipantActivity extends AppCompatActivity{
 
     private final String TAG = "TourDetailsParticipantActivity";
     Context mContext = TourDetailsParticipantActivity.this;
@@ -74,6 +76,7 @@ public class TourDetailsParticipantActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
     SharedPreferences isOngoingPreferece;
+    SharedPreferences userpreferences;
 
     private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
 
@@ -83,6 +86,7 @@ public class TourDetailsParticipantActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tourdetailsparticipant);
         setupBottomNavigationView();
         isOngoingPreferece = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
+        userpreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
         initWidgets();
         initBackArrow();
         sharedPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
@@ -105,8 +109,10 @@ public class TourDetailsParticipantActivity extends AppCompatActivity {
         listedParticipantContainer = (RecyclerView) findViewById(R.id.listedParticipantContainer);
         backArrow = (ImageView) findViewById(R.id.backArrowInListedParticipant);
         addButton = (ImageView) findViewById(R.id.add_icon);
-        if (isOngoingPreferece.getAll().size() != 0){
-            if (isOngoingPreferece.getBoolean("isongoing", false) == true){
+        if (isOngoingPreferece.getBoolean("isongoing", false)){
+            addButton.setVisibility(View.GONE);
+        } else {
+            if (userpreferences.getLong("category", 0) == 1){
                 addButton.setVisibility(View.GONE);
             }
         }
@@ -128,47 +134,55 @@ public class TourDetailsParticipantActivity extends AppCompatActivity {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 dialog.show();
                 addParticipant.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("LongLogTag")
                     @Override
                     public void onClick(View v) {
                         mProgressBar.setVisibility(View.VISIBLE);
                         mPleaseWait.setVisibility(View.VISIBLE);
+
+                        Log.d(TAG, "validating given username: "+username_text.getText().toString());
                         //query user equals given username
                         Query participantUidQuery = mDb
                                 .collection("Users").whereEqualTo("username", username_text.getText().toString());
-                        participantUidQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @SuppressLint("LongLogTag")
+
+                        participantUidQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
-                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                                if (queryDocumentSnapshots.size() != 0){
-                                    final User userPax = queryDocumentSnapshots.getDocuments().get(0).toObject(User.class);
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.getResult().size() != 0){
+                                    final User user = task.getResult().getDocuments().get(0).toObject(User.class);
+                                    user.setUpcomingtour(user.getUpcomingtour()+1);
+                                    incrementUpcomingTourCounter(user.getUid());
+
+                                    Log.d(TAG, "username "+username_text.getText().toString()+" valid! Go to next procecess..");
                                     FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                                             .setTimestampsInSnapshotsEnabled(true)
                                             .build();
                                     mDb.setFirestoreSettings(settings);
 
-                                    //add user data to participant data at he the selected GT
+                                    //add pax data to participant data at the the selected GT
                                     DocumentReference tourPax = mDb
                                             .collection("GroupTour")
-                                            .document(sharedPreferences.getString("tourid", "")).collection("Participants").document(userPax.getUid());
-                                    tourPax.set(userPax).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            .document(sharedPreferences.getString("tourid", "")).collection("Participants").document(user.getUid());
+                                    Participant pax = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), user.getCategory(), false, false);
+                                    tourPax.set(pax).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
-
+                                                Log.d(TAG, username_text.getText().toString()+" sucessfully added to GT DB as pax!");
                                                 //add user tour data
                                                 DocumentReference userTour = mDb
                                                         .collection("UserTour")
-                                                        .document(userPax.getUid())
+                                                        .document(user.getUid())
                                                         .collection("GroupTour")
                                                         .document(sharedPreferences.getString("tourid", ""));
                                                 userTour.set(sharedPreferences.getAll()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()){
-
+                                                            Log.d(TAG, "GT "+tourid+" has succesfully added to "+username_text.getText().toString()+" tour list!");
                                                             //add user loc to participant loc at GT data
                                                             DocumentReference userLocQuery = mDb.collection("UserLocation")
-                                                                    .document(userPax.getUid());
+                                                                    .document(user.getUid());
                                                             userLocQuery.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -177,11 +191,12 @@ public class TourDetailsParticipantActivity extends AppCompatActivity {
                                                                         DocumentReference paxLoc = mDb.collection("GroupTour")
                                                                                 .document(sharedPreferences.getString("tourid", ""))
                                                                                 .collection("ParticipantLocation")
-                                                                                .document(userPax.getUid());
+                                                                                .document(user.getUid());
                                                                         paxLoc.set(uLoc).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                             @Override
                                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                                 if (task.isSuccessful()){
+//                                                                                    incrementUpcomingTourCounter(userPax.getUid());
                                                                                     Toast.makeText(mContext, "New Participant has successfully added!", Toast.LENGTH_SHORT).show();
                                                                                     mProgressBar.setVisibility(View.GONE);
                                                                                     mPleaseWait.setVisibility(View.GONE);
@@ -208,14 +223,14 @@ public class TourDetailsParticipantActivity extends AppCompatActivity {
                                             }
                                         }
                                     });
-
-                                } else{
-                                    Toast.makeText(mContext, "Given username is not valid!", Toast.LENGTH_SHORT).show();
+                                } else {
                                     mProgressBar.setVisibility(View.GONE);
                                     mPleaseWait.setVisibility(View.GONE);
+                                    Toast.makeText(mContext, "Given username is not valid!", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
+
                     }
                 });
                 closeDialog = (ImageView) dialog.findViewById(R.id.closeDialog);
@@ -230,7 +245,25 @@ public class TourDetailsParticipantActivity extends AppCompatActivity {
         });
     }
 
-    private void getParticipantData(){
+    public Task<Void> incrementUpcomingTourCounter(String userId) {
+        final DocumentReference shardRef = mDb.collection("Users").document(userId);
+
+        return mDb.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                User user = transaction.get(shardRef).toObject(User.class);
+                user.setUpcomingtour(user.getUpcomingtour() + 1);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putLong("upcomingtour", user.getUpcomingtour());
+                editor.apply();
+                transaction.set(shardRef, user);
+                return null;
+            }
+        });
+    }
+
+    public void getParticipantData(){
+        Log.d("TAG", "get pax data again!");
         CollectionReference userTourRef = mDb
                 .collection("GroupTour")
                 .document(sharedPreferences.getString("tourid", "")).collection("Participants");
@@ -249,7 +282,7 @@ public class TourDetailsParticipantActivity extends AppCompatActivity {
         });
     }
 
-    private void initparticipantRecyclerView(){
+     public void initparticipantRecyclerView(){
         participantAdapter = new ListedParticipantAdapter(mContext, listedParticipant);
         listedParticipantContainer.setAdapter(participantAdapter);
         listedParticipantContainer.setLayoutManager(new LinearLayoutManager(this));

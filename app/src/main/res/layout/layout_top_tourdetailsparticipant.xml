@@ -6,19 +6,21 @@
         android:id="@+id/relLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:background="@color/backgroundColor">
         <RelativeLayout
             android:id="@+id/relLayoutTopBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:background="@drawable/gradient_blue_header_bg">
+            android:background="@drawable/gradient_blue_header_bg"
+            android:layout_marginBottom="20dp"
+            android:elevation="10dp">
             <RelativeLayout
                 android:id="@+id/topbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp">
                 <ImageView
                     android:id="@+id/backArrowInListedParticipant"
                     android:layout_width="30dp"
@@ -64,15 +66,12 @@
             android:layout_width="match_parent"
             android:layout_marginBottom="50dp"
             android:layout_below="@id/relLayoutTopBar"
-            android:background="@color/white">
+            android:background="@color/backgroundColor">
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/listedParticipantContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="@color/white">
+                android:background="@color/backgroundColor">
 
             </androidx.recyclerview.widget.RecyclerView>
         </ScrollView>

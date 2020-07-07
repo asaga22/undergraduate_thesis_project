@@ -26,6 +26,8 @@ import androidx.core.content.res.ResourcesCompat;
 import com.elkasaga.undegraduatethesisproject.R;
 import com.elkasaga.undegraduatethesisproject.activities.Tours.TourDetailsActivity;
 import com.elkasaga.undegraduatethesisproject.models.GroupTour;
+import com.elkasaga.undegraduatethesisproject.models.JoinGroupTourRequest;
+import com.elkasaga.undegraduatethesisproject.models.Participant;
 import com.elkasaga.undegraduatethesisproject.models.User;
 import com.elkasaga.undegraduatethesisproject.utils.BottomNavigationViewHelper;
 import com.elkasaga.undegraduatethesisproject.utils.StringManipulation;
@@ -44,6 +46,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 
+import java.sql.Array;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -51,7 +54,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class NewTourActivity extends AppCompatActivity {
 
@@ -71,12 +76,13 @@ public class NewTourActivity extends AppCompatActivity {
     ProgressBar mProgressBar, mProgressBarJoinTour;
     String userId;
 
-    SharedPreferences userPreferences;
+    SharedPreferences userPreferences, tourPreferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
+        tourPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
         getUserDetailsFromPreference();
 
         if (tlCategory == 0 ){
@@ -122,8 +128,12 @@ public class NewTourActivity extends AppCompatActivity {
         btnSendRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mProgressBarJoinTour.setVisibility(View.VISIBLE);
+                mPleaseWaitJoinTour.setVisibility(View.VISIBLE);
                 final String tourid = mInputTourId.getText().toString();
                 if (!tourid.equals("")){
+
+                    //search if the gt id is valid
                     Query gtQuery = mDb
                             .collection("GroupTour").whereEqualTo("tourid", tourid);
                     gtQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -132,46 +142,68 @@ public class NewTourActivity extends AppCompatActivity {
                             if (queryDocumentSnapshots.size()!=0){
                                 final GroupTour gt = queryDocumentSnapshots.getDocuments().get(0).toObject(GroupTour.class);
 
-                                FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                                        .setTimestampsInSnapshotsEnabled(true)
-                                        .build();
-                                mDb.setFirestoreSettings(settings);
-
-                                DocumentReference tourPax = mDb
-                                        .collection("GroupTour")
-                                        .document(tourid).collection("Participants").document(userPreferences.getString("uid", ""));
-                                tourPax.set(userPreferences.getAll()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                               //check if user has already a pax or send request to the group
+                                Query query = mDb.collection("UserTour").document(userPreferences.getString("uid", ""))
+                                        .collection("GroupTour").whereEqualTo("tourid", tourid);
+                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            DocumentReference userTour = mDb
-                                                    .collection("UserTour")
-                                                    .document(userPreferences.getString("uid", ""))
-                                                    .collection("GroupTour")
-                                                    .document(tourid);
-                                            userTour.set(gt).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.getResult().size() == 0){
+                                            Query query1 = mDb.collection("JoinGroupTourRequest").whereEqualTo("tourid", tourid)
+                                                    .whereEqualTo("uid", userPreferences.getString("uid", ""));
+                                            query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                 @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()){
-                                                        Toast.makeText(mContext, "Join request has successfully sent!", Toast.LENGTH_SHORT).show();
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.getResult().size() == 0){
+                                                        String jrid = "JRQ"+StringManipulation.getSixRandomNumber();
+                                                        //save req to db
+                                                        DocumentReference sendReqRef = mDb.collection("JoinGroupTourRequest")
+                                                                .document(jrid);
+
+                                                        JoinGroupTourRequest joinGroupTourRequest = new JoinGroupTourRequest(jrid, gt.getTourid(), userPreferences.getString("uid", ""), gt.getTourleader(), null);
+
+                                                        sendReqRef.set(joinGroupTourRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()){
+                                                                    mInputTourId.setText("");
+                                                                    Toast.makeText(mContext, "Join Request has successfully sent!", Toast.LENGTH_SHORT).show();
+                                                                    mProgressBarJoinTour.setVisibility(View.GONE);
+                                                                    mPleaseWaitJoinTour.setVisibility(View.GONE);
+                                                                } else{
+                                                                    Toast.makeText(mContext, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                                                                    mProgressBarJoinTour.setVisibility(View.GONE);
+                                                                    mPleaseWaitJoinTour.setVisibility(View.GONE);
+                                                                }
+                                                            }
+                                                        });
                                                     } else{
-                                                        Toast.makeText(mContext, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(mContext, "You have already sent join request to the group tour!", Toast.LENGTH_SHORT).show();
+                                                        mProgressBarJoinTour.setVisibility(View.GONE);
+                                                        mPleaseWaitJoinTour.setVisibility(View.GONE);
                                                     }
                                                 }
                                             });
-                                        } else{
-                                            Toast.makeText(mContext, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(mContext, "You already a participant in the group tour!", Toast.LENGTH_SHORT).show();
+                                            mProgressBarJoinTour.setVisibility(View.GONE);
+                                            mPleaseWaitJoinTour.setVisibility(View.GONE);
                                         }
                                     }
                                 });
 
+
                             } else{
                                 Toast.makeText(mContext, "Given Tour Id is not valid!", Toast.LENGTH_SHORT).show();
+                                mProgressBarJoinTour.setVisibility(View.GONE);
+                                mPleaseWaitJoinTour.setVisibility(View.GONE);
                             }
                         }
                     });
                 } else{
                     Toast.makeText(mContext, "Tour Id cannot be empty!", Toast.LENGTH_SHORT).show();
+                    mProgressBarJoinTour.setVisibility(View.GONE);
+                    mPleaseWaitJoinTour.setVisibility(View.GONE);
                 }
             }
         });
@@ -192,58 +224,75 @@ public class NewTourActivity extends AppCompatActivity {
                 endTime = mInputEndTime.getText().toString();
                 final String tourid = "GT"+ StringManipulation.getSixRandomNumber();
 
+                Query findGtIdQuery = mDb.collection("GroupTour")
+                        .whereEqualTo("tourid", "tourid");
+                findGtIdQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (queryDocumentSnapshots.size() == 0){
+                            if (tlCategory == 0){
+                                if (!isInputNull(tourTitle, startDate, endDate, startTime, endTime)){
+                                    final GroupTour gt = new GroupTour(tourTitle,  tourid, tlUid, startDate, endDate, startTime, endTime, 2);
+                                    Log.d(TAG, "GT IS SET = "+gt);
 
-                Log.d(TAG, "DATE IS = "+startDate);
-
-                if (tlCategory == 0){
-                    if (!isInputNull(tourTitle, startDate, endDate, startTime, endTime)){
-                        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                                .setTimestampsInSnapshotsEnabled(true)
-                                .build();
-                        mDb.setFirestoreSettings(settings);
-
-                        final DocumentReference groupTourRef = mDb
-                                .collection("GroupTour")
-                                .document(tourid);
-
-                        //add new group tour to db
-                        final GroupTour gt = new GroupTour(tourTitle, tourid, tlUid, startDate, endDate, startTime, endTime, 2);
-                        groupTourRef.set(gt).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()){
-
-                                    //add user tour to db
-                                    DocumentReference userTourRef = mDb.collection("UserTour")
-                                            .document(tlUid)
-                                            .collection("GroupTour")
-                                            .document(tourid);
-                                    userTourRef.set(gt).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    DocumentReference gtRef = mDb.collection("GroupTour").document(tourid);
+                                    Log.d(TAG, "GTREF = "+gtRef);
+                                    gtRef.set(gt).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()){
-                                                incrementUpcomingTourCounter();
-                                                Toast.makeText(mContext, "New group tour has successfully created!", Toast.LENGTH_SHORT).show();
-                                                Intent toTourDetails = new Intent(mContext, TourDetailsActivity.class);
-                                                toTourDetails.putExtra("tourid", tourid);
-                                                startActivity(toTourDetails);
+                                                Log.d(TAG, "NEW GT IS ADDED TO DB!!");
+
+                                                //usertour
+                                                DocumentReference tlRef = mDb.collection("UserTour").document(tlUid)
+                                                        .collection("GroupTour").document(tourid);
+                                                tlRef.set(gt).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()){
+                                                            incrementUpcomingTourCounter();
+                                                            mPleaseWait.setVisibility(View.GONE);
+                                                            mProgressBar.setVisibility(View.GONE);
+                                                            Log.d(TAG, "NEW GT ADDED TO USER TOUR (TOUR LEADER)!!");
+                                                            Toast.makeText(mContext, "New tour has successfully added!", Toast.LENGTH_SHORT).show();
+                                                            Intent toTourDetails = new Intent(mContext, TourDetailsActivity.class);
+                                                            toTourDetails.putExtra("tourid", tourid);
+                                                            SharedPreferences.Editor editor = tourPreferences.edit();
+                                                            editor.putString("tourid", gt.getTourid());
+                                                            editor.apply();
+                                                            startActivity(toTourDetails);
+                                                            finish();
+                                                        } else{
+                                                            mPleaseWait.setVisibility(View.GONE);
+                                                            mProgressBar.setVisibility(View.GONE);
+                                                            Toast.makeText(mContext, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+                                                });
                                             } else{
+                                                mPleaseWait.setVisibility(View.GONE);
+                                                mProgressBar.setVisibility(View.GONE);
                                                 Toast.makeText(mContext, "Something went wrong!", Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     });
 
-
                                 } else{
-                                    Toast.makeText(mContext, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                                    mPleaseWait.setVisibility(View.GONE);
+                                    mProgressBar.setVisibility(View.GONE);
+                                    Toast.makeText(mContext, "All fields must be filled out!", Toast.LENGTH_SHORT).show();
                                 }
+                            } else{
+                                mPleaseWait.setVisibility(View.GONE);
+                                mProgressBar.setVisibility(View.GONE);
+                                Toast.makeText(mContext, "You are not authorized to perform the task!", Toast.LENGTH_SHORT).show();
                             }
-                        });
-                    }
-                } else{
-                    Toast.makeText(mContext, "You are not authorized to perform the task!", Toast.LENGTH_SHORT).show();
-                }
 
+                        } else{
+                            initButtonCreateTour();
+                        }
+                    }
+                });
             }
         });
     }
@@ -360,7 +409,7 @@ public class NewTourActivity extends AppCompatActivity {
     }
 
     private void updateLabelDate(EditText editText) {
-        String myFormat = "dd/MM/yy"; //In which you need put here
+        String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
         editText.setText(sdf.format(myCalendar.getTime()));
     }

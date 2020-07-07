@@ -64,6 +64,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -107,55 +108,44 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0, 0);
         setContentView(R.layout.activity_home);
         initWidgets();
         setupBottomNavigationView();
         userPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
         isOngoingProference = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        SharedPreferences ongoingPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
+        if (isOngoingProference.getBoolean("isongoing", false)){
 
-        Query otRef = mDb
-                .collection("UserTour")
-                .document(FirebaseAuth.getInstance().getUid())
-                .collection("GroupTour")
-                .whereEqualTo("tourstatus", 1);
+            Log.d(TAG, "onCreate Lifecycle");
+            GroupTour gt = new GroupTour(
+                    ongoingPreferences.getString("tourtitle", ""),
+                    ongoingPreferences.getString("tourid", ""),
+                    ongoingPreferences.getString("tourleader", ""),
+                    ongoingPreferences.getString("startdate", ""),
+                    ongoingPreferences.getString("endate", ""),
+                    ongoingPreferences.getString("starttime", ""),
+                    ongoingPreferences.getString("endtime", ""),
+                    ongoingPreferences.getLong("tourstatus", 0)
+                    );
+            Log.d(TAG, "ONGOING TOUR SKELETON IS SET: "+gt.getTourtitle());
+            ((UserClient)getApplicationContext()).setGroupTour(gt);
 
-        mOngoingTourEventListener = otRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-
-                if (queryDocumentSnapshots.size() != 0){
-                    GroupTour gt  = queryDocumentSnapshots.getDocuments().get(0).toObject(GroupTour.class);
-                    Log.d(TAG, "GT DATA = "+gt.getTourtitle());
-                    //simpan username (key) ke local
-                    SharedPreferences sharedPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("tourtitle", gt.getTourtitle());
-                    editor.putString("tourid", gt.getTourid());
-                    editor.putString("startdate", gt.getStartdate());
-                    editor.putString("enddate", gt.getEndate());
-                    editor.putString("starttime", gt.getStarttime());
-                    editor.putString("endtime", gt.getEndtime());
-                    editor.putLong("tourstatus", gt.getTourstatus());
-                    editor.putString("tourleader", gt.getTourleader());
-                    editor.apply();
-
-                    SharedPreferences.Editor editorIsOngoing = isOngoingProference.edit();
-                    editorIsOngoing.putBoolean("isongoing", true);
-                    editorIsOngoing.apply();
-
-                    homeNoTour.setVisibility(View.INVISIBLE);
-                    tourTitleHome.setText(gt.getTourtitle());
-                    startDateInHome.setText(gt.getStartdate());
-                    endDateInHome.setText(gt.getEndate());
-                } else{
-                    homeLayout.setVisibility(View.INVISIBLE);
-                    SharedPreferences.Editor editorIsOngoing = isOngoingProference.edit();
-                    editorIsOngoing.putBoolean("isongoing", false);
-                    editorIsOngoing.apply();
-                }
-            }
-        });
+            homeNoTour.setVisibility(View.GONE);
+            homeLayout.setVisibility(View.VISIBLE);
+            tourTitleHome.setText(gt.getTourtitle());
+            startDateInHome.setText(gt.getStartdate());
+            endDateInHome.setText(gt.getEndate());
+        } else{
+            Log.d(TAG, "ONGOING TOUR GA ADA");
+            homeLayout.setVisibility(View.GONE);
+            homeNoTour.setVisibility(View.VISIBLE);
+            greetingN.setText(getGreeting());
+            SharedPreferences.Editor editorIsOngoing = isOngoingProference.edit();
+            editorIsOngoing.putBoolean("isongoing", false);
+            editorIsOngoing.apply();
+        }
 
         mProgressBar.setVisibility(View.GONE);
         mPleaseWait.setVisibility(View.GONE);
@@ -168,14 +158,14 @@ public class HomeActivity extends AppCompatActivity {
 
         initCreateNewTourLink();
         initSeeListedTourLink();
-        greetingN.setText(getGreeting());
+
 
     }
 
     private void startLocationService(){
         if(!isLocationServiceRunning()){
             Intent serviceIntent = new Intent(this, LocationService.class);
-//        this.startService(serviceIntent);
+            this.startService(serviceIntent);
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
 
@@ -199,18 +189,26 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private String getGreeting(){
-        String firstname[] = userPreferences.getString("fullname", "").split(" ");
+        String[] name = new String[0];
+        if ( userPreferences.getString("fullname", "").contains(" ")){
+            name = userPreferences.getString("fullname", "").trim().split("\\s+");
+        } else{
+            name[0] = userPreferences.getString("fullname", "");
+        }
+        String firstname = name[0];
+
         Calendar c = Calendar.getInstance();
         int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
         String greeting = "";
 
         if(timeOfDay >= 0 && timeOfDay < 12){
-            greeting = "Good Morning, "+firstname[0];
+            greeting = "Good Morning, "+firstname;
         }else if(timeOfDay >= 12 && timeOfDay < 16){
-            greeting = "Good Afternoon, "+firstname[0];
+            greeting = "Good Afternoon, "+firstname;
         }else if(timeOfDay >= 16 && timeOfDay <= 23){
-            greeting = "Good Evening, "+firstname[0];
+            greeting = "Good Evening, "+firstname;
         }
+        Log.d(TAG, "GREETING IN GREETING = "+greeting);
         return greeting;
     }
 
@@ -235,6 +233,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initOngoingMapsButton(){
+        final GroupTour gt = ((UserClient)getApplicationContext()).getGroupTour();
         homeMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -334,40 +333,26 @@ public class HomeActivity extends AppCompatActivity {
                     if (task.isSuccessful()){
                         Log.d(TAG, "USER LOC ADDED TO DB");
 
-                        //QUERY IF USER HAS ONGOING TOUR
-                        Query otRef = mDb
-                                .collection("UserTour")
-                                .document(FirebaseAuth.getInstance().getUid())
-                                .collection("GroupTour")
-                                .whereEqualTo("tourstatus", 1);
+                        //save participant location to db
+                        if ( ((UserClient)getApplicationContext()).getGroupTour() != null ){
+                            GroupTour gt = ((UserClient)getApplicationContext()).getGroupTour();
+                            DocumentReference participantLocRef = mDb.collection("GroupTour")
+                                    .document(gt.getTourid())
+                                    .collection("ParticipantLocation")
+                                    .document(FirebaseAuth.getInstance().getUid());
 
-                        otRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                                Log.d(TAG, "ongoingtour size = "+
-                                        queryDocumentSnapshots.size());
-                                if (queryDocumentSnapshots.size() != 0) {
-                                    gt = queryDocumentSnapshots.getDocuments().get(0).toObject(GroupTour.class);
-                                    //save participant location to db
-                                    DocumentReference participantLocRef = mDb.collection("GroupTour")
-                                            .document(gt.getTourid())
-                                            .collection("ParticipantLocation")
-                                            .document(FirebaseAuth.getInstance().getUid());
-
-                                    participantLocRef.set(mUserLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()){
-                                                Log.d(TAG, "GT PAX LOC! "+ mUserLocation.getGeoPoint());
-                                                Log.d(TAG, "saveUserLocation: \ninserted user location into database."
-                                                        +"\n latitude: "+ mUserLocation.getGeoPoint().getLatitude()
-                                                        +"\n longitude: "+mUserLocation.getGeoPoint().getLongitude());
-                                            }
-                                        }
-                                    });
+                            participantLocRef.set(mUserLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()){
+                                        Log.d(TAG, "GT PAX LOC! "+ mUserLocation.getGeoPoint());
+                                        Log.d(TAG, "saveUserLocation: \ninserted user location into database."
+                                                +"\n latitude: "+ mUserLocation.getGeoPoint().getLatitude()
+                                                +"\n longitude: "+mUserLocation.getGeoPoint().getLongitude());
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
 
                     }
                 }
@@ -542,12 +527,15 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getLastKnownLocation();
-        if (checkMapServices()){
-            if (mLocationPermissionGranted){
-                getUserDetails();
-            }else{
-                getLocationPermission();
+        Log.d(TAG, "onResume Lifecycle");
+        if ( ((UserClient)getApplicationContext()).getGroupTour() != null ){
+            getLastKnownLocation();
+            if (checkMapServices()){
+                if (mLocationPermissionGranted){
+                    getUserDetails();
+                }else{
+                    getLocationPermission();
+                }
             }
         }
     }
