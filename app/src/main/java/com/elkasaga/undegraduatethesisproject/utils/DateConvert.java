@@ -7,12 +7,21 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class DateConvert {
+
+    public static String threeLettersMonth(int month){
+        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+        return months[month];
+    }
 
     public static String getDisplayableTime(long delta)
     {
@@ -131,21 +140,94 @@ public class DateConvert {
         }
     }
 
+    public static Date convertStringToDate(String date){
+        Date date1 = null;
+        SimpleDateFormat df1;
+       if (date.contains(":")){
+           df1 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+
+       } else {
+           df1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+       }
+
+        if (df1 != null){
+            try {
+                date1 = df1.parse(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return date1;
+    }
+
+    public static String timestammpToChatDate(Date date){
+        Date currentDate = new Date();
+        String sendtime = "";
+        Log.d("", "DATE = "+date);
+        Log.d("", "CURRENT DATE = "+currentDate);
+        if (currentDate.getDate() == date.getDate()){
+            sendtime = String.valueOf(date.getHours()) + ":" +String.valueOf(date.getMinutes());
+        } else if (currentDate.getDay() != date.getDay() && currentDate.getYear() == date.getYear()){
+            sendtime = String.valueOf(date.getDay()) + " " + threeLettersMonth(date.getMonth()) + " at " + String.valueOf(date.getHours()) + ":" +String.valueOf(date.getMinutes());
+        } else if (currentDate.getDay() != date.getDay() && currentDate.getYear() != date.getYear()){
+            sendtime = String.valueOf(date.getDay()) + " " + threeLettersMonth(date.getMonth()) + " " + String.valueOf(date.getYear()) + " at " + String.valueOf(date.getHours()) + ":" +String.valueOf(date.getMinutes());
+        }
+
+        return sendtime;
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String getCollapsedDateRange(String startdate, String endDate, Context context){
-        Date date1 = null, date2 = null;
-        SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    public static long dateToMillis(Date date){
+        long millis = date.toInstant().toEpochMilli();
+        return millis;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static String getCollapsedDateRange(Date startdate, Date enddate, Context context){
+
+        long startmillis =  startdate.toInstant().toEpochMilli();
+        long endmillis = enddate.toInstant().toEpochMilli();
+
+        String range = DateUtils.formatDateRange(context, startmillis, endmillis, DateUtils.FORMAT_ABBREV_TIME);
+        return range;
+    }
+
+    public static ArrayList<String> getDates(String dateString1, String dateString2)
+    {
+        ArrayList<String> dates = new ArrayList<>();
+        String myFormat = "";
+
+        if (dateString1.contains(":")){
+            myFormat = "dd/MM/yyyy HH:mm";
+        } else{
+            myFormat = "dd/MM/yyyy";
+        }
+
+        SimpleDateFormat df1 = new SimpleDateFormat(myFormat, Locale.getDefault());
+
+        Date date1 = null;
+        Date date2 = null;
+
         try {
-            date1 = df1.parse(startdate);
-            date2 = df1.parse(endDate);
+            date1 = df1.parse(dateString1);
+            date2 = df1.parse(dateString2);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        long startmillis =  date1.toInstant().toEpochMilli();
-        long endmillis = date2.toInstant().toEpochMilli();
-        String range = DateUtils.formatDateRange(context, startmillis, endmillis, DateUtils.FORMAT_ABBREV_TIME);
-        return range;
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(date1);
+
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date2);
+
+        while(!cal1.after(cal2))
+        {
+            dates.add(df1.format(cal1.getTime()));
+            cal1.add(Calendar.DATE, 1);
+        }
+        return dates;
     }
 }

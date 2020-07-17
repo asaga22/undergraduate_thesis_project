@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor">
 
     <RelativeLayout
         android:id="@+id/rel"
@@ -22,7 +23,21 @@
             android:fontFamily="@font/mregular"/>
     </RelativeLayout>
 
+    <TextView
+        android:layout_below="@id/rel"
+        android:id="@+id/nonotif"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No notification found"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:textColor="@color/defaultGrey"
+        android:fontFamily="@font/mregular"
+        android:visibility="gone"/>
+
     <ScrollView
+        android:id="@+id/scrNotif"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="50dp"

@@ -14,14 +14,29 @@ public class UserLocation implements Parcelable {
     private @ServerTimestamp
     Date timestamp;
     private User user;
+    private Participant participant;
 
     public UserLocation(GeoPoint geoPoint, Date timestamp, User user) {
+
         this.geoPoint = geoPoint;
         this.timestamp = timestamp;
         this.user = user;
     }
 
-    public UserLocation() {
+    public UserLocation(GeoPoint geoPoint, Date timestamp, Participant participant) {
+        this.geoPoint = geoPoint;
+        this.timestamp = timestamp;
+        this.participant = participant;
+    }
+
+    public UserLocation(GeoPoint geoPoint, Date timestamp, User user, Participant participant) {
+        this.geoPoint = geoPoint;
+        this.timestamp = timestamp;
+        this.participant = participant;
+        this.user = user;
+    }
+
+    public UserLocation(){
     }
 
     protected UserLocation(Parcel in) {
@@ -63,12 +78,21 @@ public class UserLocation implements Parcelable {
         this.user = user;
     }
 
+    public Participant getParticipant() {
+        return participant;
+    }
+
+    public void setParticipant(Participant participant) {
+        this.participant = participant;
+    }
+
     @Override
     public String toString() {
         return "UserLocation{" +
                 "geoPoint=" + geoPoint +
                 ", timestamp='" + timestamp + '\'' +
                 ", user=" + user +
+                ", participant "+ participant +
                 '}';
     }
 

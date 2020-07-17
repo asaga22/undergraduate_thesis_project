@@ -117,50 +117,12 @@ public class SigninActivity extends AppCompatActivity {
                                             editor.putString("avatar", user.getAvatar());
                                             editor.apply();
 
-                                            //query to find whether authenticated user has tour going on
-                                            Query otRef = mDb
-                                                    .collection("UserTour")
-                                                    .document(FirebaseAuth.getInstance().getUid())
-                                                    .collection("GroupTour")
-                                                    .whereEqualTo("tourstatus", 1);
-                                            otRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                                                    if (queryDocumentSnapshots.size() != 0){
-                                                        GroupTour gt = queryDocumentSnapshots.getDocuments().get(0).toObject(GroupTour.class);
-                                                        SharedPreferences isOngoingPreferences = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
-                                                        SharedPreferences.Editor editorIsOngoing = isOngoingPreferences.edit();
-                                                        editorIsOngoing.putBoolean("isongoing", true);
-                                                        editorIsOngoing.apply();
-
-                                                        //simpan ongoing gt (key) ke local
-                                                        SharedPreferences sharedPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
-                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                        editor.putString("tourtitle", gt.getTourtitle());
-                                                        editor.putString("tourid", gt.getTourid());
-                                                        editor.putString("startdate", gt.getStartdate());
-                                                        editor.putString("enddate", gt.getEndate());
-                                                        editor.putString("starttime", gt.getStarttime());
-                                                        editor.putString("endtime", gt.getEndtime());
-                                                        editor.putLong("tourstatus", gt.getTourstatus());
-                                                        editor.putString("tourleader", gt.getTourleader());
-                                                        editor.apply();
-                                                        ((UserClient)getApplicationContext()).setGroupTour(gt);
-                                                        Toast.makeText(mContext, getString(R.string.auth_success), Toast.LENGTH_SHORT).show();
-                                                    } else{
-                                                        SharedPreferences isOngoingPreferences = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
-                                                        SharedPreferences.Editor editorIsOngoing = isOngoingPreferences.edit();
-                                                        editorIsOngoing.putBoolean("isongoing", false);
-                                                        editorIsOngoing.apply();
-                                                    }
-                                                    //navigate to home if authentication success
-                                                    mProgressBar.setVisibility(View.GONE);
-                                                    pleaseWait.setVisibility(View.GONE);
-                                                    Intent toHome = new Intent(mContext, HomeActivity.class);
-                                                    startActivity(toHome);
-                                                    finish();
-                                                }
-                                            });
+                                            //navigate to home if authentication success
+                                            mProgressBar.setVisibility(View.GONE);
+                                            pleaseWait.setVisibility(View.GONE);
+                                            Intent toSplash = new Intent(mContext, SplashActivity.class);
+                                            startActivity(toSplash);
+                                            finish();
 
                                         }
                                     }

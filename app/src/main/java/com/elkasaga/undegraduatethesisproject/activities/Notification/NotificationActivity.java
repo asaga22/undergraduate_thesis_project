@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,9 +52,11 @@ public class NotificationActivity extends AppCompatActivity {
     private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
 
     private RecyclerView listedNotifContainer;
+    private ScrollView scrV;
+    private TextView nonotif;
     private ArrayList<JoinGroupTourRequest> joinReqList;
     private ArrayList<JoinRequestRespond> respondList;
-    private Set<String> mReqUid = new HashSet<>();
+    private Set<String> mReqid= new HashSet<>();
     private Set<String> mRespId = new HashSet<>();
     private ListedJoinGroupTourRequestAdapter joinGroupTourRequestAdapter;
     private ListenerRegistration reqListener;
@@ -63,60 +68,71 @@ public class NotificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notification);
         setupBottomNavigationView();
         listedNotifContainer = findViewById(R.id.listedNotifContainer);
+        scrV = findViewById(R.id.scrNotif);
+        nonotif = findViewById(R.id.nonotif);
         userPreferenes = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
         joinReqList = new ArrayList<>();
         respondList = new ArrayList<>();
+        Log.d(TAG, "USER CATEGORY = "+userPreferenes.getLong("category", 0));
 
-        getNotifData();
-        initRequestRecyclerView();
+        if (userPreferenes.getLong("category", 0) == 1){
+            initRespondRecyclerView();
+        } else if (userPreferenes.getLong("category", 0) == 0){
+            initRequestRecyclerView();
+            getNotifData();
+        }
     }
 
     private void getNotifData(){
+        Query reqRef = mDb.collection("JoinGroupTourRequest")
+                .whereEqualTo("tourleader", userPreferenes.getString("uid", ""));
+        reqListener = reqRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots.size() != 0){
 
-        if (userPreferenes.getLong("category", 0) == 0){
-            Query reqRef = mDb.collection("JoinGroupTourRequest")
-                    .whereEqualTo("tourleader", userPreferenes.getString("uid", ""));
-            reqListener = reqRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                    if (queryDocumentSnapshots.size() != 0){
-
-                        for (QueryDocumentSnapshot doc: queryDocumentSnapshots){
-                            JoinGroupTourRequest joinGroupTourRequest = doc.toObject(JoinGroupTourRequest.class);
-                            if (!mReqUid.contains(joinGroupTourRequest.getUid())){
-                                mReqUid.add(joinGroupTourRequest.getUid());
-                                joinReqList.add(joinGroupTourRequest);
-                            }
+                    for (QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                        JoinGroupTourRequest joinGroupTourRequest = doc.toObject(JoinGroupTourRequest.class);
+                        if (!mReqid.contains(joinGroupTourRequest.getRequestid())){
+                            mReqid.add(joinGroupTourRequest.getRequestid());
+                            Log.d(TAG, "REQUEST ID = "+joinGroupTourRequest.getRequestid());
+                            joinReqList.add(joinGroupTourRequest);
                         }
-                        joinGroupTourRequestAdapter.notifyDataSetChanged();
                     }
+                    joinGroupTourRequestAdapter.notifyDataSetChanged();
+                } else{
+                    scrV.setVisibility(View.GONE);
+                    nonotif.setVisibility(View.VISIBLE);
                 }
-            });
-        } else if(userPreferenes.getLong("category", 0) == 1){
-            CollectionReference respRef = mDb.collection("JoinRequestRespond")
-                    .document(userPreferenes.getString("uid", ""))
-                    .collection("Respond");
-            respRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.getResult().size() != 0){
-                        for (QueryDocumentSnapshot document : task.getResult()){
-                            JoinRequestRespond requestRespond = document.toObject(JoinRequestRespond.class);
-                            if (!mRespId.contains(requestRespond.getRequestid())){
-                                mRespId.add(requestRespond.getRequestid());
-                                respondList.add(requestRespond);
-                                Log.d(TAG, "RESPOND  = "+requestRespond.getTourid());
-                            }
+            }
+        });
+    }
+
+    public void initRespondRecyclerView(){
+        listedNotifContainer.setLayoutManager(new LinearLayoutManager(mContext));
+        CollectionReference respRef = mDb.collection("JoinRequestRespond")
+                .document(userPreferenes.getString("uid", ""))
+                .collection("Respond");
+        respRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.getResult().size() != 0){
+                    for (QueryDocumentSnapshot document : task.getResult()){
+                        JoinRequestRespond requestRespond = document.toObject(JoinRequestRespond.class);
+                        if (!mRespId.contains(requestRespond.getRequestid())){
+                            mRespId.add(requestRespond.getRequestid());
+                            respondList.add(requestRespond);
+                            Log.d(TAG, "RESPOND  = "+respondList.get(0).getTourid());
                         }
-                        joinGroupTourRequestAdapter = new ListedJoinGroupTourRequestAdapter(mContext, joinReqList, respondList);
-                        listedNotifContainer.setAdapter(joinGroupTourRequestAdapter);
-                        listedNotifContainer.setLayoutManager(new LinearLayoutManager(mContext));
                     }
+                    joinGroupTourRequestAdapter = new ListedJoinGroupTourRequestAdapter(mContext, joinReqList, respondList);
+                    listedNotifContainer.setAdapter(joinGroupTourRequestAdapter);
+                } else{
+                    scrV.setVisibility(View.GONE);
+                    nonotif.setVisibility(View.VISIBLE);
                 }
-            });
-        }
-
-
+            }
+        });
     }
 
     public void initRequestRecyclerView(){

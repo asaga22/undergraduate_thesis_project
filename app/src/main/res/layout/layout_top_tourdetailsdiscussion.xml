@@ -12,7 +12,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:background="@drawable/gradient_blue_header_bg">
+            android:background="@drawable/gradient_blue_header_bg"
+            android:elevation="5dp">
             <RelativeLayout
                 android:id="@+id/topbar"
                 android:layout_width="match_parent"

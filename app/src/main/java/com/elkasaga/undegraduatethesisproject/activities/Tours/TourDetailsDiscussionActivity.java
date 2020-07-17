@@ -34,7 +34,11 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -169,8 +173,14 @@ public class TourDetailsDiscussionActivity extends AppCompatActivity {
                                 .document(gtPreferences.getString("tourid", ""))
                                 .collection("Discussion")
                                 .document();
-
-                        ChatMessage chatMessage = new ChatMessage(chatMessageRef.getId(), message, null, user);
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                        Date date = null;
+                        try {
+                            date = sdf.parse(Calendar.getInstance().getTime().toString());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        ChatMessage chatMessage = new ChatMessage(chatMessageRef.getId(), message, date, user);
                         chatMessageRef.set(chatMessage).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {

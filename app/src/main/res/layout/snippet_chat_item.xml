@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/incomingRel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/incoming_chatbubble"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="80dp"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingEnd="20dp">
+
+        <TextView
+            android:id="@+id/senderIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User12345"
+            android:textAlignment="textStart"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="5dp"/>
+
+        <TextView
+            android:id="@+id/messageIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/senderIn"
+            android:layout_marginTop="7dp"
+            android:text="Bonjour tout le monde!"
+            android:textAlignment="textStart"
+            android:textColor="@color/defaultGrey"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/dateIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:00"
+            android:layout_below="@id/messageIn"
+            android:layout_toRightOf="@id/messageIn"
+            android:textSize="10sp"
+            android:textColor="@color/lightGrey"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/outgoingRel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/outgoing_chatbubble"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="80dp"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingEnd="20dp">
+
+        <TextView
+            android:id="@+id/messageOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bonjour tout le monde!"
+            android:textAlignment="textStart"
+            android:textSize="14sp"
+            android:textColor="@color/defaultGrey"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dateOut"
+            android:layout_below="@id/messageOut"
+            android:layout_toRightOf="@id/messageOut"
+            android:text="12:00"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="@color/lightGrey"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

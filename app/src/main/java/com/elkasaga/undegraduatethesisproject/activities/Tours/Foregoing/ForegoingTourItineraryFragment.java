@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.elkasaga.undegraduatethesisproject.R;
 import com.elkasaga.undegraduatethesisproject.activities.Tours.TourDetailsItineraryActivity;
 import com.elkasaga.undegraduatethesisproject.models.Itinerary;
+import com.elkasaga.undegraduatethesisproject.utils.DateConvert;
 import com.elkasaga.undegraduatethesisproject.utils.ListedItineraryAdapter;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
@@ -55,7 +56,7 @@ public class ForegoingTourItineraryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_foregoingtour_itinerary, container, false);
         tourPreference = getContext().getSharedPreferences("GT_BASICINFO", getContext().MODE_PRIVATE);
-        dates = TourDetailsItineraryActivity.getDates(tourPreference.getString("startdate", ""), tourPreference.getString("enddate", ""));
+        dates = DateConvert.getDates(tourPreference.getString("startdate", ""), tourPreference.getString("enddate", ""));
         listedItineraryContainer = view.findViewById(R.id.listedParticipantContainerForegoing);
         listItinerary = new ArrayList<Itinerary>();
         allItinerary = new ArrayList<ArrayList<Itinerary>>();

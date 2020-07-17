@@ -163,7 +163,7 @@ public class TourDetailsParticipantActivity extends AppCompatActivity{
                                     DocumentReference tourPax = mDb
                                             .collection("GroupTour")
                                             .document(sharedPreferences.getString("tourid", "")).collection("Participants").document(user.getUid());
-                                    Participant pax = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), user.getCategory(), false, false);
+                                    final Participant pax = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), user.getCategory(), false, false);
                                     tourPax.set(pax).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -188,6 +188,7 @@ public class TourDetailsParticipantActivity extends AppCompatActivity{
                                                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                                     if (task.isSuccessful()){
                                                                         UserLocation uLoc = task.getResult().toObject(UserLocation.class);
+                                                                        uLoc.setParticipant(pax);
                                                                         DocumentReference paxLoc = mDb.collection("GroupTour")
                                                                                 .document(sharedPreferences.getString("tourid", ""))
                                                                                 .collection("ParticipantLocation")

@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.elkasaga.undegraduatethesisproject.UserClient;
+import com.elkasaga.undegraduatethesisproject.models.Participant;
 import com.elkasaga.undegraduatethesisproject.models.User;
 import com.elkasaga.undegraduatethesisproject.models.UserLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -41,8 +42,8 @@ public class LocationService extends Service {
     private static final String TAG = "LocationService";
 
     private FusedLocationProviderClient mFusedLocationClient;
-    private final static long UPDATE_INTERVAL = 15 * 1000;  /* 15 secs */
-    private final static long FASTEST_INTERVAL = 8000; /* 2 sec */
+    private final static long UPDATE_INTERVAL = 30 * 1000;  /* 4 secs */
+    private final static long FASTEST_INTERVAL = 7 * 2000; /* 2 sec */
 
     @Nullable
     @Override
@@ -107,8 +108,9 @@ public class LocationService extends Service {
 
                         if (location != null) {
                             User user = ((UserClient)(getApplicationContext())).getUser();
+                            Participant thisPax = ((UserClient)(getApplicationContext())).getParticipant();
                             GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                            UserLocation userLocation = new UserLocation(geoPoint, null, user);
+                            UserLocation userLocation = new UserLocation(geoPoint, null, user, thisPax);
                             saveUserLocation(userLocation);
                         }
                     }
@@ -119,29 +121,17 @@ public class LocationService extends Service {
     private void saveUserLocation(final UserLocation userLocation){
 
         try{
-            DocumentReference locationRef = FirebaseFirestore.getInstance()
-                    .collection("UserLocation")
-                    .document(FirebaseAuth.getInstance().getUid());
-
-            locationRef.set(userLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+            //update pax loc in Ongoing GT
+            DocumentReference paxLocs = FirebaseFirestore.getInstance().collection("GroupTour")
+                    .document( ((UserClient)getApplicationContext()).getGroupTour().getTourid() )
+                    .collection("ParticipantLocation").document(FirebaseAuth.getInstance().getUid());
+            paxLocs.set(userLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        //update pax loc in Ongoing GT
-                        DocumentReference paxLocs = FirebaseFirestore.getInstance().collection("GroupTour")
-                                .document( ((UserClient)getApplicationContext()).getGroupTour().getTourid() )
-                                .collection("ParticipantLocation").document(FirebaseAuth.getInstance().getUid());
-                        paxLocs.set(userLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()){
-                                    Log.d(TAG, "onComplete: \ninserted user location into database." +
-                                            "\n latitude: " + userLocation.getGeoPoint().getLatitude() +
-                                            "\n longitude: " + userLocation.getGeoPoint().getLongitude());
-                                }
-                            }
-                        });
-
+                    if (task.isSuccessful()){
+                        Log.d(TAG, "onComplete: \ninserted user location into database." +
+                                "\n latitude: " + userLocation.getGeoPoint().getLatitude() +
+                                "\n longitude: " + userLocation.getGeoPoint().getLongitude());
                     }
                 }
             });

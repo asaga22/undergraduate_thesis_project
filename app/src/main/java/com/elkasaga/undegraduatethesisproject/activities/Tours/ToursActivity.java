@@ -1,7 +1,6 @@
 package com.elkasaga.undegraduatethesisproject.activities.Tours;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,26 +10,14 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.elkasaga.undegraduatethesisproject.R;
-import com.elkasaga.undegraduatethesisproject.models.GroupTour;
 import com.elkasaga.undegraduatethesisproject.utils.BottomNavigationViewHelper;
-import com.elkasaga.undegraduatethesisproject.utils.ListedToursAdapter;
 import com.elkasaga.undegraduatethesisproject.utils.SectionsPagerAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.LabelVisibilityMode;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
 
 public class ToursActivity extends AppCompatActivity {
 

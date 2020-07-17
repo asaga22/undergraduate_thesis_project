@@ -86,7 +86,7 @@
                             android:id="@+id/tourTitleHome"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="5D4N FASILKOM ESA UNGGUL OUTING"
+                            android:text=""
                             android:layout_below="@id/statusTourHome"
                             android:textAlignment="center"
                             android:textColor="@color/black"
@@ -106,7 +106,7 @@
                                 android:id="@+id/startDateInHome"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="12 AUG 2020"/>
+                                android:text=""/>
                             <View
                                 android:layout_width="2dp"
                                 android:layout_height="match_parent"
@@ -117,7 +117,7 @@
                                 android:id="@+id/endDateInHome"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="12 AUG 2020"/>
+                                android:text=""/>
                         </LinearLayout>
 
                         <LinearLayout

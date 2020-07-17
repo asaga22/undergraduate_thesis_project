@@ -110,7 +110,7 @@ public class TourDetailsActivity extends AppCompatActivity {
                     tourTitle.setText(gt.getTourtitle());
                     tourId.setText(tourid);
                     startDate.setText(gt.getStartdate());
-                    endDate.setText(gt.getEndate());
+                    endDate.setText(gt.getEnddate());
 
                     if ( gt.getTourstatus() == 2){
                         statusTour.setText("Upcoming Tour");
@@ -126,7 +126,7 @@ public class TourDetailsActivity extends AppCompatActivity {
                     editor.putString("tourtitle", gt.getTourtitle());
                     editor.putString("tourid", gt.getTourid());
                     editor.putString("startdate", gt.getStartdate());
-                    editor.putString("enddate", gt.getEndate());
+                    editor.putString("enddate", gt.getEnddate());
                     editor.putString("starttime", gt.getStarttime());
                     editor.putString("endtime", gt.getEndtime());
                     editor.putLong("tourstatus", gt.getTourstatus());

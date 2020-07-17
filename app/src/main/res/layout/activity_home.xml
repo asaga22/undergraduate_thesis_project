@@ -7,19 +7,21 @@
     tools:context=".activities.Home.HomeActivity">
 
     <RelativeLayout
+        android:id="@+id/hl"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- home no tour view -->
-        <include layout="@layout/layout_top_home_noongoingtour" />
-
         <!-- home view -->
         <include layout="@layout/layout_top_home" />
+
+        <!-- home no tour view -->
+        <include layout="@layout/layout_top_home_noongoingtour" />
 
         <!--bottom navigation-->
         <include layout="@layout/layout_bottom_navigation_view"/>
 
     </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

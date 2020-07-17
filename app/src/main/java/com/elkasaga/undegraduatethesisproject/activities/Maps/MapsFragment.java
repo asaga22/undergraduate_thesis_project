@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -84,6 +85,7 @@ public class MapsFragment extends Fragment implements
     private ArrayList<Marker> mTripMarkers = new ArrayList<>();
 
     ImageView backArrow;
+//    RelativeLayout mapLoaderLayout;
 
     public static MapsFragment newInstance(){
         return new MapsFragment();
@@ -105,9 +107,8 @@ public class MapsFragment extends Fragment implements
         View view  = inflater.inflate(R.layout.fragment_map, container, false);
         mMapView = (MapView) view.findViewById(R.id.mapPax);
         backArrow = (ImageView) view.findViewById(R.id.backArrowInMap);
+//        mapLoaderLayout = (RelativeLayout) view.findViewById(R.id.mapsLoaderLayout);
         view.findViewById(R.id.btn_reset_map).setOnClickListener(this);
-        initGoogleMap(savedInstanceState);
-
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +116,7 @@ public class MapsFragment extends Fragment implements
                 startActivity(back);
             }
         });
-
+        initGoogleMap(savedInstanceState);
         setUserPosition();
 
         return view;
@@ -265,7 +266,7 @@ public class MapsFragment extends Fragment implements
                         .collection("GroupTour")
                         .document(otId)
                         .collection("ParticipantLocation")
-                        .document(clusterMarker.getUser().getUid());
+                        .document(clusterMarker.getParticipant().getUid());
 
                 userLocationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -277,7 +278,7 @@ public class MapsFragment extends Fragment implements
                             // update the location
                             for (int i = 0; i < mClusterMarkers.size(); i++) {
                                 try {
-                                    if (mClusterMarkers.get(i).getUser().getUid().equals(updatedUserLocation.getUser().getUid())) {
+                                    if (mClusterMarkers.get(i).getParticipant().getUid().equals(updatedUserLocation.getParticipant().getUid())) {
 
                                         LatLng updatedLatLng = new LatLng(
                                                 updatedUserLocation.getGeoPoint().getLatitude(),
@@ -327,7 +328,7 @@ public class MapsFragment extends Fragment implements
 
         if(mGoogleMap != null){
 
-            resetMap();
+//            resetMap();
 
             if(mClusterManager == null){
                 mClusterManager = new ClusterManager<ClusterMarker>(getActivity().getApplicationContext(), mGoogleMap);
@@ -345,28 +346,28 @@ public class MapsFragment extends Fragment implements
 
                 Log.d(TAG, "addMapMarkers: location: " + userLocation.getGeoPoint().toString());
                 try{
-                    String snippet = "";
-                    if(userLocation.getUser().getUid().equals(FirebaseAuth.getInstance().getUid())){
+                    String snippet;
+                    if(userLocation.getParticipant().getUid().equals(FirebaseAuth.getInstance().getUid())){
                         snippet = "This is you";
                     }
                     else{
-                        snippet = "Determine route to " + userLocation.getUser().getUsername() + "?";
+                        snippet = "Determine route to " + userLocation.getParticipant().getUsername() + "?";
                     }
 
 
                     // set the default avatar
                     String avatar = "";
                     try{
-                        avatar = userLocation.getUser().getAvatar();
+                        avatar = userLocation.getParticipant().getAvatar();
                     }catch (NumberFormatException e){
-                        Log.d(TAG, "addMapMarkers: no avatar for " + userLocation.getUser().getUsername() + ", setting default.");
+                        Log.d(TAG, "addMapMarkers: no avatar for " + userLocation.getParticipant().getUsername() + ", setting default.");
                     }
                     ClusterMarker newClusterMarker = new ClusterMarker(
                             new LatLng(userLocation.getGeoPoint().getLatitude(), userLocation.getGeoPoint().getLongitude()),
-                            userLocation.getUser().getUsername(),
+                            userLocation.getParticipant().getUsername(),
                             snippet,
                             avatar,
-                            userLocation.getUser()
+                            userLocation.getParticipant()
                     );
                     mClusterManager.addItem(newClusterMarker);
                     mClusterMarkers.add(newClusterMarker);
@@ -405,7 +406,8 @@ public class MapsFragment extends Fragment implements
 
     private void setUserPosition() {
         for (UserLocation userLocation : mUserLocations) {
-            if (userLocation.getUser().getUid().equals(FirebaseAuth.getInstance().getUid())) {
+            Log.d(TAG, "MAPS FRAG ULOC = "+userLocation.getParticipant().getFullname());
+            if (userLocation.getParticipant().getUid().equals(FirebaseAuth.getInstance().getUid())) {
                 mUserPosition = userLocation;
             }
             Log.d("", "USEr LOCATION = "+userLocation.getGeoPoint());
@@ -466,6 +468,7 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public void onMapReady(GoogleMap map) {
+//        mapLoaderLayout.setVisibility(View.GONE);
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -473,6 +476,7 @@ public class MapsFragment extends Fragment implements
             return;
         }
 //        map.setMyLocationEnabled(true);
+
         mGoogleMap = map;
         mGoogleMap.setOnPolylineClickListener(this);
         addMapMarkers();

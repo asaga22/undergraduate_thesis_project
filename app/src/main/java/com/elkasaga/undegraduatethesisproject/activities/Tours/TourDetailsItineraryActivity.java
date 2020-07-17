@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.elkasaga.undegraduatethesisproject.R;
 import com.elkasaga.undegraduatethesisproject.models.Itinerary;
 import com.elkasaga.undegraduatethesisproject.utils.BottomNavigationViewHelper;
+import com.elkasaga.undegraduatethesisproject.utils.DateConvert;
 import com.elkasaga.undegraduatethesisproject.utils.ListedItineraryAdapter;
 import com.elkasaga.undegraduatethesisproject.utils.StringManipulation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -88,7 +89,7 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
         tourid = tourPreference.getString("tourid", "");
         isOngoingPreferece = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
         initWidgets();
-        dates = getDates(tourPreference.getString("startdate", ""), tourPreference.getString("enddate", ""));
+        dates = DateConvert.getDates(tourPreference.getString("startdate", ""), tourPreference.getString("enddate", ""));
         initBackArrow();
         listedItineraryContainer = (RecyclerView) findViewById(R.id.listItineraryRv);
         listItinerary = new ArrayList<Itinerary>();
@@ -307,37 +308,6 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
         String format = "HH:mm";
         SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
         editText.setText(sdf.format(myCalendar.getTime()));
-    }
-
-    public static ArrayList<String> getDates(String dateString1, String dateString2)
-    {
-        ArrayList<String> dates = new ArrayList<>();
-        String myFormat = "dd/MM/yyyy";
-        SimpleDateFormat df1 = new SimpleDateFormat(myFormat, Locale.getDefault());
-
-        Date date1 = null;
-        Date date2 = null;
-
-        try {
-            date1 = df1.parse(dateString1);
-            date2 = df1.parse(dateString2);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        Calendar cal1 = Calendar.getInstance();
-        cal1.setTime(date1);
-
-
-        Calendar cal2 = Calendar.getInstance();
-        cal2.setTime(date2);
-
-        while(!cal1.after(cal2))
-        {
-            dates.add(df1.format(cal1.getTime()));
-            cal1.add(Calendar.DATE, 1);
-        }
-        return dates;
     }
 
     public long determineDay(String selectedDate){

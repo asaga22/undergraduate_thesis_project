@@ -18,14 +18,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.elkasaga.undegraduatethesisproject.R;
+import com.elkasaga.undegraduatethesisproject.UserClient;
 import com.elkasaga.undegraduatethesisproject.activities.GetStartedActivity;
 import com.elkasaga.undegraduatethesisproject.utils.BottomNavigationViewHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.LabelVisibilityMode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 public class AccountActivity extends AppCompatActivity {
@@ -67,7 +71,12 @@ public class AccountActivity extends AppCompatActivity {
         }
         accountName.setText(fullname);
         totalForegoing.setText(String.valueOf(fore));
-        totalOngoing.setText(String.valueOf(on));
+        if (((UserClient)getApplicationContext()).getGroupTour() != null){
+            totalOngoing.setText("1");
+        } else{
+            totalOngoing.setText("0");
+        }
+
         totalUpcoming.setText(String.valueOf(up));
         Picasso.with(this).load(ava).centerCrop().fit().into(profile_image);
     }
@@ -114,10 +123,15 @@ public class AccountActivity extends AppCompatActivity {
 
 //    private void getUserUpcomingTour(){
 //        Query upcomingRef = mDb.collection("UserTour")
-//                .document(uid)
+//                .document(FirebaseAuth.getInstance().getUid())
 //                .collection("GroupTour")
 //                .whereEqualTo("tourstatus", 2);
-//        upcomingRef.addSnapshotListener(new E)
+//        upcomingRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//
+//            }
+//        });
 //    }
 
     private void getUserDetailsFromPreference(){

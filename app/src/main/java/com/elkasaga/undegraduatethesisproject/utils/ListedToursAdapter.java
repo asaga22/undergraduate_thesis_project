@@ -51,45 +51,41 @@ public class ListedToursAdapter extends RecyclerView.Adapter <ListedToursAdapter
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, final int i) {
 
-        myViewHolder.tourtitle.setText(grouptour.get(i).getTourtitle());
-        myViewHolder.daterange.setText(grouptour.get(i).getStartdate());
-        myViewHolder.tourid.setText(grouptour.get(i).getTourid());
-        
-//        Date date = null;
-////        String dateString = grouptour.get(i).getStartdate() +" "+ grouptour.get(i).getStarttime()+":00";
-////        Log.d(" ", "DATE STRING = "+dateString);
-////        SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-////        try {
-////            date = df1.parse(dateString);
-////        } catch (ParseException e) {
-////            e.printStackTrace();
-////        }
-////
-////        long datemillis =  date.toInstant().toEpochMilli();
-////        myViewHolder.daterange.setText(DateConvert.getDisplayableTime(datemillis));
+        if (grouptour != null){
+            myViewHolder.tourtitle.setText(grouptour.get(i).getTourtitle());
+            myViewHolder.daterange.setText(grouptour.get(i).getStartdate());
+            myViewHolder.tourid.setText(grouptour.get(i).getTourid());
+            String collapsedDate = "";
 
-        myViewHolder.daterange.setText(DateConvert.getCollapsedDateRange(grouptour.get(i).getStartdate(), grouptour.get(i).getEndate(), context));
-
-        final String tourid = grouptour.get(i).getTourid();
-
-        myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences isOngoing = context.getSharedPreferences("IS_ONGOING", context.MODE_PRIVATE);
-                SharedPreferences.Editor editorIsOngoing = isOngoing.edit();
-                editorIsOngoing.putBoolean("isongoing", false);
-                editorIsOngoing.apply();
-                if (grouptour.get(i).getTourstatus() == 2){
-                    Intent toTourDetails = new Intent(context, TourDetailsActivity.class);
-                    toTourDetails.putExtra("tourid", tourid);
-                    context.startActivity(toTourDetails);
-                } else if (grouptour.get(i).getTourstatus() == 0){
-                    Intent toTourHistoryDetails = new Intent(context, ToursForegoingActivity.class);
-                    toTourHistoryDetails.putExtra("tourid", tourid);
-                    context.startActivity(toTourHistoryDetails);
-                }
+            if (!grouptour.get(i).getEnddate().equals("") && !grouptour.get(i).getStartdate().equals("")){
+                Date start = DateConvert.convertStringToDate(grouptour.get(i).getStartdate());
+                Date end = DateConvert.convertStringToDate(grouptour.get(i).getEnddate());
+                collapsedDate = DateConvert.getCollapsedDateRange(start, end, context);
             }
-        });
+            myViewHolder.daterange.setText(collapsedDate);
+
+            final String tourid = grouptour.get(i).getTourid();
+
+            myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferences isOngoing = context.getSharedPreferences("IS_ONGOING", context.MODE_PRIVATE);
+                    SharedPreferences.Editor editorIsOngoing = isOngoing.edit();
+                    editorIsOngoing.putBoolean("isongoing", false);
+                    editorIsOngoing.apply();
+                    if (grouptour.get(i).getTourstatus() == 2){
+                        Intent toTourDetails = new Intent(context, TourDetailsActivity.class);
+                        toTourDetails.putExtra("tourid", tourid);
+                        context.startActivity(toTourDetails);
+                    } else if (grouptour.get(i).getTourstatus() == 0){
+                        Intent toTourHistoryDetails = new Intent(context, ToursForegoingActivity.class);
+                        toTourHistoryDetails.putExtra("tourid", tourid);
+                        context.startActivity(toTourHistoryDetails);
+                    }
+                }
+            });
+        }
+
 
     }
 

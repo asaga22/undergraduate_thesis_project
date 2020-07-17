@@ -257,9 +257,6 @@ public class NewTourActivity extends AppCompatActivity {
                                                             Toast.makeText(mContext, "New tour has successfully added!", Toast.LENGTH_SHORT).show();
                                                             Intent toTourDetails = new Intent(mContext, TourDetailsActivity.class);
                                                             toTourDetails.putExtra("tourid", tourid);
-                                                            SharedPreferences.Editor editor = tourPreferences.edit();
-                                                            editor.putString("tourid", gt.getTourid());
-                                                            editor.apply();
                                                             startActivity(toTourDetails);
                                                             finish();
                                                         } else{

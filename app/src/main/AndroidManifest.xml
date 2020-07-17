@@ -59,6 +59,8 @@
         <service android:name=".services.LocationService"
             android:stopWithTask="true">
         </service>
+
+        <receiver android:name=".utils.NotificationBroadcast"/>
     </application>
 
 </manifest>

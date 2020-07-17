@@ -2,8 +2,12 @@ package com.elkasaga.undegraduatethesisproject.activities.Home;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,12 +15,15 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -24,8 +31,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,10 +49,14 @@ import com.elkasaga.undegraduatethesisproject.activities.Tours.TourDetailsItiner
 import com.elkasaga.undegraduatethesisproject.activities.Tours.TourDetailsParticipantActivity;
 import com.elkasaga.undegraduatethesisproject.activities.Tours.ToursActivity;
 import com.elkasaga.undegraduatethesisproject.models.GroupTour;
+import com.elkasaga.undegraduatethesisproject.models.Itinerary;
+import com.elkasaga.undegraduatethesisproject.models.Participant;
 import com.elkasaga.undegraduatethesisproject.models.User;
 import com.elkasaga.undegraduatethesisproject.models.UserLocation;
 import com.elkasaga.undegraduatethesisproject.services.LocationService;
 import com.elkasaga.undegraduatethesisproject.utils.BottomNavigationViewHelper;
+import com.elkasaga.undegraduatethesisproject.utils.DateConvert;
+import com.elkasaga.undegraduatethesisproject.utils.NotificationBroadcast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -67,6 +81,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -91,6 +106,7 @@ public class HomeActivity extends AppCompatActivity {
     RelativeLayout homeLayout;
     ProgressBar mProgressBar;
     private ListenerRegistration mOngoingTourEventListener;
+    RelativeLayout hl;
 
 
     private boolean mLocationPermissionGranted = false;
@@ -98,12 +114,13 @@ public class HomeActivity extends AppCompatActivity {
     private UserLocation mUserLocation = null;
     private ArrayList<UserLocation> mUserLocations = new ArrayList<>();
     private Set<String> mParticipantId = new HashSet<>();
+    private ArrayList<Itinerary> itineraryList = new ArrayList<>();
+    private Set<String> itineraryIdList = new HashSet<>();
     private GroupTour gt;
+    ListenerRegistration itiListener;
 
-
-    private final static long UPDATE_INTERVAL = 4 * 1000;  /* 4 secs */
-    private final static long FASTEST_INTERVAL = 2000; /* 2 sec */
-    Location mLocation;
+    private ArrayList<AlarmManager> alarmManagers= new ArrayList<>();
+    ArrayList<PendingIntent> intentArray = new ArrayList<PendingIntent>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,42 +130,47 @@ public class HomeActivity extends AppCompatActivity {
         initWidgets();
         setupBottomNavigationView();
         userPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
-        isOngoingProference = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        SharedPreferences ongoingPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
-        if (isOngoingProference.getBoolean("isongoing", false)){
+        createNotificationChannel();
 
-            Log.d(TAG, "onCreate Lifecycle");
-            GroupTour gt = new GroupTour(
-                    ongoingPreferences.getString("tourtitle", ""),
-                    ongoingPreferences.getString("tourid", ""),
-                    ongoingPreferences.getString("tourleader", ""),
-                    ongoingPreferences.getString("startdate", ""),
-                    ongoingPreferences.getString("endate", ""),
-                    ongoingPreferences.getString("starttime", ""),
-                    ongoingPreferences.getString("endtime", ""),
-                    ongoingPreferences.getLong("tourstatus", 0)
-                    );
-            Log.d(TAG, "ONGOING TOUR SKELETON IS SET: "+gt.getTourtitle());
-            ((UserClient)getApplicationContext()).setGroupTour(gt);
+        if ( ((UserClient)getApplicationContext()).getGroupTour() != null ){
+            Log.d(TAG, "HOME: GT SKELETON: "+((UserClient)getApplicationContext()).getGroupTour().getTourid());
+            getParticipantLocation();
+            gt = new GroupTour(((UserClient)getApplicationContext()).getGroupTour().getTourtitle(),
+                    ((UserClient)getApplicationContext()).getGroupTour().getTourid(),
+                    ((UserClient)getApplicationContext()).getGroupTour().getTourleader(),
+                    ((UserClient)getApplicationContext()).getGroupTour().getStartdate(),
+                    ((UserClient)getApplicationContext()).getGroupTour().getEnddate(),
+                    ((UserClient)getApplicationContext()).getGroupTour().getStarttime(),
+                    ((UserClient)getApplicationContext()).getGroupTour().getEndtime(),
+                    ((UserClient)getApplicationContext()).getGroupTour().getTourstatus());
+            Log.d(TAG, "Home: am i called? i hope so");
+            getLastKnownLocation();
 
+            if (checkMapServices()){
+                if (mLocationPermissionGranted){
+                    getUserDetails();
+                }else{
+                    getLocationPermission();
+                }
+            }
             homeNoTour.setVisibility(View.GONE);
             homeLayout.setVisibility(View.VISIBLE);
             tourTitleHome.setText(gt.getTourtitle());
             startDateInHome.setText(gt.getStartdate());
-            endDateInHome.setText(gt.getEndate());
-        } else{
-            Log.d(TAG, "ONGOING TOUR GA ADA");
+            endDateInHome.setText(gt.getEnddate());
+            mProgressBar.setVisibility(View.GONE);
+            mPleaseWait.setVisibility(View.GONE);
+            checkItinerary();
+        } else {
             homeLayout.setVisibility(View.GONE);
             homeNoTour.setVisibility(View.VISIBLE);
             greetingN.setText(getGreeting());
-            SharedPreferences.Editor editorIsOngoing = isOngoingProference.edit();
-            editorIsOngoing.putBoolean("isongoing", false);
-            editorIsOngoing.apply();
+            mProgressBar.setVisibility(View.GONE);
+            mPleaseWait.setVisibility(View.GONE);
         }
 
-        mProgressBar.setVisibility(View.GONE);
-        mPleaseWait.setVisibility(View.GONE);
+        //universal setup
         greeting.setText(getGreeting());
 
         initOngoingMapsButton();
@@ -233,42 +255,49 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initOngoingMapsButton(){
-        final GroupTour gt = ((UserClient)getApplicationContext()).getGroupTour();
         homeMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CollectionReference paxLocs = mDb.collection("GroupTour")
-                        .document(gt.getTourid())
-                        .collection("ParticipantLocation");
-
-                paxLocs.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (queryDocumentSnapshots != null){
-                            for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                                UserLocation location = doc.toObject(UserLocation.class);
-                                if (!mParticipantId.contains(location.getUser().getUid())){
-                                    mParticipantId.add(location.getUser().getUid());
-                                    mUserLocations.add(location);
-                                }
-                            }
-
-                            Log.d(TAG, "Pax Size = "+queryDocumentSnapshots.size());
-
-                            MapsFragment fragment = MapsFragment.newInstance();
-                            Bundle bundle = new Bundle();
-                            bundle.putParcelableArrayList("pax_locations", mUserLocations);
-                            bundle.putString("OT_ID", gt.getTourid());
-                            fragment.setArguments(bundle);
-                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                            transaction.replace(R.id.mapFrameLayout, fragment, "Maps Fragment");
-                            transaction.addToBackStack("Maps Fragment");
-                            transaction.commitAllowingStateLoss();;
-                        }
-                    }
-                });
+                MapsFragment fragment = MapsFragment.newInstance();
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("pax_locations", mUserLocations);
+                bundle.putString("OT_ID", gt.getTourid());
+                fragment.setArguments(bundle);
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.mapFrameLayout, fragment, "Maps Fragment");
+                transaction.addToBackStack("Maps Fragment");
+                transaction.commitAllowingStateLoss();
+                hl = (RelativeLayout) findViewById(R.id.hl);
+                hl.setVisibility(View.GONE);
             }
         });
+    }
+
+
+    private void getParticipantLocation(){
+
+        CollectionReference paxLocs = mDb.collection("GroupTour")
+                .document(((UserClient)getApplicationContext()).getGroupTour().getTourid())
+                .collection("ParticipantLocation");
+
+        paxLocs.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots.size() != 0){
+                    Log.d(TAG, "UserLocation aladah test: "+queryDocumentSnapshots.getDocuments().get(0).get("participant"));
+                    for (int i = 0; i < queryDocumentSnapshots.size(); i++){
+                        UserLocation userLocation = queryDocumentSnapshots.getDocuments().get(i).toObject(UserLocation.class);
+                        mUserLocations.add(userLocation);
+                        Log.d(TAG, "UserLocation aladah nama: "+mUserLocations.get(i).getParticipant().getFullname());
+                    }
+                }
+            }
+        });
+    }
+
+
+    private void hideSoftKeyboard(){
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     private void initOngoingItineraryButton(){
@@ -289,6 +318,72 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(toParticipant);
             }
         });
+    }
+
+    private void checkItinerary(){
+        final Date currentDate = new Date();
+        CollectionReference itiRef = mDb.collection("GroupTour").document(gt.getTourid())
+                .collection("Itineraries");
+        itiListener = itiRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots.size() != 0){
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots){
+                        Itinerary itinerary = doc.toObject(Itinerary.class);
+                        if (!itineraryIdList.contains(itinerary.getItineraryid())){
+                            itineraryIdList.add(itinerary.getItineraryid());
+                            itineraryList.add(itinerary);
+                            long currentMillis = DateConvert.dateToMillis(currentDate) - 10000;
+                            long itiMillis = DateConvert.dateToMillis(DateConvert.convertStringToDate(itinerary.getDate() +" "+itinerary.getStarttime()));
+                            long timeToNotify = (itiMillis - currentMillis);
+
+                            Log.d(TAG, "CURR MILLIS = "+ currentMillis);
+                            Log.d(TAG, "ITI MILLIS = "+ itiMillis);
+                            Log.d(TAG, "TIME TO NOTIFY = "+ timeToNotify);
+
+                            if (itiMillis >= currentMillis){
+                                Intent intent = new Intent(HomeActivity.this, NotificationBroadcast.class);
+                                Bundle mBundle = new Bundle();
+                                mBundle.putString("notiftype", "ogt_iti_start");
+                                mBundle.putInt("reqcode", (int) timeToNotify);
+                                intent.putExtras(mBundle);
+
+                                SharedPreferences sharedPreferences = getSharedPreferences(String.valueOf(timeToNotify), MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("title", "Itinerary Reminder");
+                                editor.putString("message", "it's time for activity: "+itinerary.getDescription());
+                                editor.putInt("reqcode", (int) timeToNotify);
+                                editor.apply();
+
+                                PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, (int) timeToNotify, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                                alarmManager.set(AlarmManager.RTC_WAKEUP,
+                                        itiMillis,
+                                        pendingIntent);
+                                alarmManagers.add(alarmManager);
+                                intentArray.add(pendingIntent);
+                            }
+                        }
+                    }
+
+                }
+            }
+        });
+
+    }
+
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "Participant";
+            String description = "Channel for sleep notif";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("sleepNotif", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     private void initOngoingDiscussionButton(){
@@ -371,10 +466,30 @@ public class HomeActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()){
                         Log.d(TAG, "onComplete: successfully get the  user details.");
-                        User user = task.getResult().toObject(User.class);
-                        mUserLocation.setUser(user);
-                        ((UserClient)getApplicationContext()).setUser(user);
-                        getLastKnownLocation();
+                        final User user = task.getResult().toObject(User.class);
+
+                        DocumentReference userRef = mDb.collection("GroupTour").document(gt.getTourid())
+                                .collection("Participants").document(FirebaseAuth.getInstance().getUid());
+                        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()){
+                                    Log.d(TAG, "onComplete: successfully get the  this pax details.");
+                                    Participant thisPax = task.getResult().toObject(Participant.class);
+                                    if (thisPax == null){
+                                        Participant fromUser = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), user.getCategory(), true, false);
+                                        mUserLocation.setParticipant(fromUser);
+                                        ((UserClient)getApplicationContext()).setParticipant(fromUser);
+                                    } else {
+                                        mUserLocation.setParticipant(thisPax);
+                                        ((UserClient)getApplicationContext()).setParticipant(thisPax);
+                                    }
+                                    mUserLocation.setUser(user);
+                                    ((UserClient)getApplicationContext()).setUser(user);
+                                    getLastKnownLocation();
+                                }
+                            }
+                        });
                     }
                 }
             });
@@ -524,21 +639,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume Lifecycle");
-        if ( ((UserClient)getApplicationContext()).getGroupTour() != null ){
-            getLastKnownLocation();
-            if (checkMapServices()){
-                if (mLocationPermissionGranted){
-                    getUserDetails();
-                }else{
-                    getLocationPermission();
-                }
-            }
-        }
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        Log.d(TAG, "onResume Lifecycle");
+//
+//    }
 
     /*
      * Bottom Navigation Setup
