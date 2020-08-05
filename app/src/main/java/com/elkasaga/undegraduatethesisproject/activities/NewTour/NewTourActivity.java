@@ -81,6 +81,7 @@ public class NewTourActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0, 0);
         userPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
         tourPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
         getUserDetailsFromPreference();

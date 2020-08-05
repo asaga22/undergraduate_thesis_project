@@ -74,9 +74,7 @@ public class TourDetailsParticipantActivity extends AppCompatActivity{
     private ListenerRegistration mParticipantEventListener;
     private Set<String> mParticipantId = new HashSet<>();
 
-    SharedPreferences sharedPreferences;
-    SharedPreferences isOngoingPreferece;
-    SharedPreferences userpreferences;
+    SharedPreferences sharedPreferences, isOngoingPreferece, userpreferences, paxOrPresPref;
 
     private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
 
@@ -87,6 +85,10 @@ public class TourDetailsParticipantActivity extends AppCompatActivity{
         setupBottomNavigationView();
         isOngoingPreferece = getSharedPreferences("IS_ONGOING", MODE_PRIVATE);
         userpreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
+        paxOrPresPref = getSharedPreferences("PARTICIPANT_OR_PRESENCE", MODE_PRIVATE);
+        SharedPreferences.Editor editor = paxOrPresPref.edit();
+        editor.putString("from", "presence");
+        editor.apply();
         initWidgets();
         initBackArrow();
         sharedPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
@@ -163,7 +165,7 @@ public class TourDetailsParticipantActivity extends AppCompatActivity{
                                     DocumentReference tourPax = mDb
                                             .collection("GroupTour")
                                             .document(sharedPreferences.getString("tourid", "")).collection("Participants").document(user.getUid());
-                                    final Participant pax = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), user.getCategory(), false, false);
+                                    final Participant pax = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), user.getCategory(), 2, false);
                                     tourPax.set(pax).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {

@@ -53,6 +53,7 @@ public class AccountActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0, 0);
         setContentView(R.layout.activity_account);
         setupBottomNavigationView();
         initWidgets();

@@ -163,15 +163,15 @@ public class DateConvert {
     public static String timestammpToChatDate(Date date){
         Date currentDate = new Date();
         String sendtime = "";
-        Log.d("", "DATE = "+date);
-        Log.d("", "CURRENT DATE = "+currentDate);
-        if (currentDate.getDate() == date.getDate()){
+
+        if (currentDate.getDate() == date.getDate() && currentDate.getMonth() == date.getMonth() && currentDate.getYear() == date.getYear()){
             sendtime = String.valueOf(date.getHours()) + ":" +String.valueOf(date.getMinutes());
-        } else if (currentDate.getDay() != date.getDay() && currentDate.getYear() == date.getYear()){
-            sendtime = String.valueOf(date.getDay()) + " " + threeLettersMonth(date.getMonth()) + " at " + String.valueOf(date.getHours()) + ":" +String.valueOf(date.getMinutes());
-        } else if (currentDate.getDay() != date.getDay() && currentDate.getYear() != date.getYear()){
-            sendtime = String.valueOf(date.getDay()) + " " + threeLettersMonth(date.getMonth()) + " " + String.valueOf(date.getYear()) + " at " + String.valueOf(date.getHours()) + ":" +String.valueOf(date.getMinutes());
+        } else if ( ( currentDate.getDate() != date.getDate() && currentDate.getMonth() == date.getMonth() && currentDate.getYear() == date.getYear() ) || ( currentDate.getMonth() != date.getMonth() && currentDate.getYear() == date.getYear() )) {
+            sendtime = String.valueOf(date.getDate()) + " " + threeLettersMonth(date.getMonth()) + " at " + String.valueOf(date.getHours()) + ":" + String.valueOf(date.getMinutes());
+        } else if (currentDate.getYear() != date.getYear()){
+            sendtime = String.valueOf(date.getDate()) + " " + threeLettersMonth(date.getMonth()) + " " + String.valueOf(date.getYear()+1900) + " at " + String.valueOf(date.getHours()) + ":" +String.valueOf(date.getMinutes());
         }
+
 
         return sendtime;
     }
@@ -230,4 +230,13 @@ public class DateConvert {
         }
         return dates;
     }
+
+    public static String dateToDateWithTextMonth(Date date){
+        String[] months = {"January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"};
+
+        return String.valueOf(date.getDay()) + " " + months[date.getMonth()] + " " + String.valueOf(date.getYear()+1900);
+    }
+
+
 }

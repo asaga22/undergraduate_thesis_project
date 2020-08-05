@@ -8,10 +8,10 @@ import com.google.firebase.firestore.GeoPoint;
 public class Participant implements Parcelable {
 
     String uid, username, fullname, avatar;
-    long category;
-    boolean present, represent;
+    long category, present;
+    boolean represent;
 
-    public Participant(String uid, String username, String fullname, String avatar, long category, boolean present, boolean represent) {
+    public Participant(String uid, String username, String fullname, String avatar, long category, long present, boolean represent) {
         this.uid = uid;
         this.username = username;
         this.fullname = fullname;
@@ -34,7 +34,7 @@ public class Participant implements Parcelable {
         fullname = in.readString();
         avatar = in.readString();
         category = in.readLong();
-        present = in.readByte() != 0;
+        present = in.readLong();
         represent = in.readByte() != 0;
     }
 
@@ -90,11 +90,11 @@ public class Participant implements Parcelable {
         this.category = category;
     }
 
-    public boolean isPresent() {
+    public long getPresent() {
         return present;
     }
 
-    public void setPresent(boolean present) {
+    public void setPresent(long present) {
         this.present = present;
     }
 
@@ -118,7 +118,7 @@ public class Participant implements Parcelable {
         dest.writeString(fullname);
         dest.writeString(avatar);
         dest.writeLong(category);
-        dest.writeByte((byte) (present ? 1 : 0));
+        dest.writeLong(present);
         dest.writeByte((byte) (represent ? 1 : 0));
     }
 }

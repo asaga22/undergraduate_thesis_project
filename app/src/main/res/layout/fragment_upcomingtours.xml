@@ -2,7 +2,21 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/noupcoming"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No notification found"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:textColor="@color/defaultGrey"
+        android:fontFamily="@font/mregular"
+        android:visibility="gone"/>
+
     <ScrollView
+        android:id="@+id/scrollUpcoming"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_marginTop="20dp"

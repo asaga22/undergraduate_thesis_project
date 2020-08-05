@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/incomingRel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/incoming_chatbubble"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
         android:layout_marginEnd="80dp"
         android:paddingStart="20dp"
         android:paddingTop="5dp"
@@ -22,34 +25,42 @@
             android:layout_height="wrap_content"
             android:text="User12345"
             android:textAlignment="textStart"
-            android:textStyle="bold"
-            android:textSize="12sp"
             android:textColor="@color/black"
-            android:layout_marginBottom="5dp"/>
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/messageIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/senderIn"
-            android:layout_marginTop="7dp"
-            android:text="Bonjour tout le monde!"
+            android:text="hi!"
             android:textAlignment="textStart"
             android:textColor="@color/defaultGrey"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/senderIn" />
 
         <TextView
             android:id="@+id/dateIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="12:00"
             android:layout_below="@id/messageIn"
             android:layout_toRightOf="@id/messageIn"
-            android:textSize="10sp"
+            android:text="12:00"
             android:textColor="@color/lightGrey"
-            android:textStyle="bold"/>
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/messageIn"
+            app:layout_constraintVertical_bias="1.0" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <RelativeLayout
         android:id="@+id/outgoingRel"
@@ -57,7 +68,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/outgoing_chatbubble"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
         android:layout_marginStart="80dp"
         android:paddingStart="20dp"
         android:paddingTop="5dp"
@@ -84,6 +96,63 @@
             android:textStyle="bold"
             android:textColor="@color/lightGrey"/>
 
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/systemGenChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_rounded_corner"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingEnd="20dp"
+        android:elevation="1dp"
+        android:layout_margin="3dp">
+        <TextView
+            android:id="@+id/messageSystemTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Emergency Alert!"
+            android:textAlignment="textStart"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#AF1B1B"/>
+
+        <TextView
+            android:id="@+id/messageSystemcontent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/messageSystemTitle"
+            android:textSize="14sp"
+            android:textColor="@color/defaultGrey"
+            android:text="user is in emergency situation!"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dateSystem"
+            android:layout_below="@id/messageSystemcontent"
+            android:layout_alignParentRight="true"
+            android:text="12:00"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="@color/lightGrey"/>
+
+        <View
+            android:id="@+id/ln"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightGrey"
+            android:layout_below="@id/dateSystem"/>
+
+        <TextView
+            android:id="@+id/sysGenText"
+            android:layout_below="@id/ln"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This is a system generated message"
+            android:textColor="@color/lightGrey"/>
     </RelativeLayout>
 
 </RelativeLayout>

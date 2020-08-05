@@ -78,6 +78,18 @@ public class ListedToursAdapter extends RecyclerView.Adapter <ListedToursAdapter
                         toTourDetails.putExtra("tourid", tourid);
                         context.startActivity(toTourDetails);
                     } else if (grouptour.get(i).getTourstatus() == 0){
+                        //simpan touid basic info (key) ke local
+                        SharedPreferences sharedPreferences = context.getSharedPreferences("GT_BASICINFO", context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("tourtitle", grouptour.get(i).getTourtitle());
+                        editor.putString("tourid", grouptour.get(i).getTourid());
+                        editor.putString("startdate", grouptour.get(i).getStartdate());
+                        editor.putString("enddate", grouptour.get(i).getEnddate());
+                        editor.putString("starttime", grouptour.get(i).getStarttime());
+                        editor.putString("endtime", grouptour.get(i).getEndtime());
+                        editor.putLong("tourstatus", grouptour.get(i).getTourstatus());
+                        editor.putString("tourleader", grouptour.get(i).getTourleader());
+                        editor.apply();
                         Intent toTourHistoryDetails = new Intent(context, ToursForegoingActivity.class);
                         toTourHistoryDetails.putExtra("tourid", tourid);
                         context.startActivity(toTourHistoryDetails);

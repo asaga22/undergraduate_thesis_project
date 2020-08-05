@@ -97,6 +97,7 @@ public class MapsFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
             mUserLocations = getArguments().getParcelableArrayList("pax_locations");
+            mUserPosition = getArguments().getParcelable("current_user_location");
             otId = getArguments().getString("OT_ID");
         }
     }
@@ -117,8 +118,6 @@ public class MapsFragment extends Fragment implements
             }
         });
         initGoogleMap(savedInstanceState);
-        setUserPosition();
-
         return view;
     }
 
@@ -328,7 +327,7 @@ public class MapsFragment extends Fragment implements
 
         if(mGoogleMap != null){
 
-//            resetMap();
+            resetMap();
 
             if(mClusterManager == null){
                 mClusterManager = new ClusterManager<ClusterMarker>(getActivity().getApplicationContext(), mGoogleMap);
@@ -404,16 +403,6 @@ public class MapsFragment extends Fragment implements
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, width, height, padding));
     }
 
-    private void setUserPosition() {
-        for (UserLocation userLocation : mUserLocations) {
-            Log.d(TAG, "MAPS FRAG ULOC = "+userLocation.getParticipant().getFullname());
-            if (userLocation.getParticipant().getUid().equals(FirebaseAuth.getInstance().getUid())) {
-                mUserPosition = userLocation;
-            }
-            Log.d("", "USEr LOCATION = "+userLocation.getGeoPoint());
-        }
-    }
-
     private void initGoogleMap(Bundle savedInstanceState) {
         // *** IMPORTANT ***
         // MapView requires that the Bundle you pass contain _ONLY_ MapView SDK
@@ -475,7 +464,7 @@ public class MapsFragment extends Fragment implements
                 != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-//        map.setMyLocationEnabled(true);
+        map.setMyLocationEnabled(true);
 
         mGoogleMap = map;
         mGoogleMap.setOnPolylineClickListener(this);

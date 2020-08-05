@@ -127,13 +127,22 @@ public class SignupActivity extends AppCompatActivity {
                                                 }else{
                                                     View parentLayout = findViewById(android.R.id.content);
                                                     Toast.makeText(mContext, "Failed to register new user!", Toast.LENGTH_SHORT).show();
+                                                    mProgressBar.setVisibility(View.GONE);
+                                                    pleaseWaitRegister.setVisibility(View.GONE);
+                                                    button_signup.setEnabled(true);
+                                                    button_signup.setText("Sign Up");
                                                 }
                                             }
                                         });
 
                                     }
                                     else {
-                                        Toast.makeText(mContext, "Something went wrong.", Toast.LENGTH_SHORT).show();
+                                        Log.i("Response","Failed to create user:"+task.getException().getMessage());
+                                        Toast.makeText(mContext, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                        mProgressBar.setVisibility(View.GONE);
+                                        pleaseWaitRegister.setVisibility(View.GONE);
+                                        button_signup.setEnabled(true);
+                                        button_signup.setText("Sign Up");
                                     }
 
                                     // ...
@@ -142,6 +151,10 @@ public class SignupActivity extends AppCompatActivity {
 
                 } else{
                     Toast.makeText(mContext, "All fields must be filled out!", Toast.LENGTH_SHORT).show();
+                    mProgressBar.setVisibility(View.GONE);
+                    pleaseWaitRegister.setVisibility(View.GONE);
+                    button_signup.setEnabled(true);
+                    button_signup.setText("Sign Up");
                 }
 
             }

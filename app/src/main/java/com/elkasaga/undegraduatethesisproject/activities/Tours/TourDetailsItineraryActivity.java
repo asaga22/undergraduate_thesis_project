@@ -1,13 +1,16 @@
 package com.elkasaga.undegraduatethesisproject.activities.Tours;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,16 +25,20 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.elkasaga.undegraduatethesisproject.R;
+import com.elkasaga.undegraduatethesisproject.UserClient;
+import com.elkasaga.undegraduatethesisproject.activities.Home.HomeActivity;
 import com.elkasaga.undegraduatethesisproject.models.Itinerary;
 import com.elkasaga.undegraduatethesisproject.utils.BottomNavigationViewHelper;
 import com.elkasaga.undegraduatethesisproject.utils.DateConvert;
 import com.elkasaga.undegraduatethesisproject.utils.ListedItineraryAdapter;
+import com.elkasaga.undegraduatethesisproject.utils.NotificationBroadcast;
 import com.elkasaga.undegraduatethesisproject.utils.StringManipulation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -84,6 +91,14 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tourdetailsitinerary);
         setupBottomNavigationView();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .setPersistenceEnabled(true)
+                .build();
+
+        if (mDb.getFirestoreSettings() == null){
+            mDb.setFirestoreSettings(settings);
+        }
         userPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
         tourPreference = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
         tourid = tourPreference.getString("tourid", "");
@@ -109,6 +124,7 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
                 .orderBy("day", Query.Direction.ASCENDING)
                 .orderBy("indexstarttime", Query.Direction.ASCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @SuppressLint("LongLogTag")
                     @Override
                     public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
@@ -121,6 +137,7 @@ public class TourDetailsItineraryActivity extends AppCompatActivity {
 
                             for (int i = 0; i<queryDocumentSnapshots.size(); i++){
                                 Itinerary itinerary = queryDocumentSnapshots.getDocuments().get(i).toObject(Itinerary.class);
+
                                 if (!mItineraryId.contains(itinerary.getItineraryid())){
                                     mItineraryId.add(itinerary.getItineraryid());
                                     listItinerary.add(itinerary);

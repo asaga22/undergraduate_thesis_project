@@ -16,5 +16,6 @@
     <color name="toscagreen">#62CDD1</color>
     <color name="greenishGrey">#9BAFB0</color>
     <color name="yellow">#F0CB53</color>
+    <color name="softRed">#FFECEC</color>
 
 </resources>

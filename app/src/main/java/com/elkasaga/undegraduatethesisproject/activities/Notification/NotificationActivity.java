@@ -65,6 +65,7 @@ public class NotificationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0, 0);
         setContentView(R.layout.activity_notification);
         setupBottomNavigationView();
         listedNotifContainer = findViewById(R.id.listedNotifContainer);

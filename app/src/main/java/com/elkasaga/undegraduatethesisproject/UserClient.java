@@ -5,6 +5,8 @@ import android.app.Application;
 import com.elkasaga.undegraduatethesisproject.models.GroupTour;
 import com.elkasaga.undegraduatethesisproject.models.Participant;
 import com.elkasaga.undegraduatethesisproject.models.User;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 
 public class UserClient extends Application {

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -44,6 +45,7 @@ public class ForegoingTourParticipantFragment extends Fragment {
 
     private SharedPreferences sharedPreferences;
     private TextView total;
+
     private int allRepPaxTotal = 0;
 
     @Override
@@ -56,9 +58,11 @@ public class ForegoingTourParticipantFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_foregoingtour_participants, container, false);
         sharedPreferences = getContext().getSharedPreferences("GT_BASICINFO", getContext().MODE_PRIVATE);
+        Log.d("TAG", "COBA = "+sharedPreferences.getString("tourid", ""));
         listedParticipantContainer = view.findViewById(R.id.listedParticipantContainerForegoing);
         listedParticipant = new ArrayList<Participant>();
         total = view.findViewById(R.id.totalParticipant);
+
         initRecyclerView();
         getParticipantData();
         return view;

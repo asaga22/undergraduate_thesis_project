@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">UndegraduateThesisProject</string>
+    <string name="app_name">tournité</string>
 
     <string name="google_map_api_key">AIzaSyD-Ilt04SCysu_NLrWnt20uvVLWEzQXrqU</string>
 
@@ -15,4 +15,11 @@
     <string name="auth_failed">Failed to Authenticate</string>
     <string name="auth_success">Authentication Succes</string>
 
+
+    <!--  COMPONENTS  -->
+    <!--  button  -->
+    <string name="btn_signin_en">sign in</string>
+    <string name="btn_signin_id">masuk</string>
+    <string name="btn_signup_en">sign up</string>
+    <string name="btn_signup_id">daftar</string>
 </resources>

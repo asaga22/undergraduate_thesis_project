@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:id="@+id/relLayoutTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/gradient_blue_header_bg"
+        android:layout_marginBottom="10dp"
+        android:elevation="10dp">
+
+        <ImageView
+            android:id="@+id/backArrowInPresence"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_backarrow"
+            android:layout_marginStart="20dp"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:layout_toRightOf="@id/backArrowInPresence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Presence"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_marginStart="20sp"
+            android:fontFamily="@font/mmedium"
+            android:id="@+id/itineraryTitle"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:id="@+id/daydate"
+        android:layout_below="@id/relLayoutTopBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tuesday, 4 June 2001"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:textSize="13sp"
+        android:fontFamily="@font/mmedium"
+        android:textColor="@color/defaultGrey"/>
+
+    <TextView
+        android:id="@+id/presItiDesc"
+        android:layout_below="@id/daydate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tuesday, 4 June 2001"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:textSize="15sp"
+        android:fontFamily="@font/mmedium"
+        android:textColor="@color/defaultGrey"/>
+
+    <TextView
+        android:id="@+id/presItiTime"
+        android:layout_below="@id/presItiDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tuesday, 4 June 2001"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:textSize="13sp"
+        android:fontFamily="@font/mregular"
+        android:textColor="@color/defaultGrey"/>
+
+    <ScrollView
+        android:layout_below="@id/presItiTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/presenceContainer">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </ScrollView>
+
+
+</RelativeLayout>

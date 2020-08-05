@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginBottom="10dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/softGrey"
+        android:layout_marginBottom="5dp"/>
+
+    <LinearLayout
+        android:padding="7dp"
+        android:id="@+id/listedPaxToCheckLinLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avaPres"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/no_pic"
+            app:civ_border_color="@color/softGrey"
+            app:civ_border_width="3dp"/>
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:id="@+id/namePres"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/defaultGrey"
+            android:textSize="16sp"
+            android:fontFamily="@font/mregular"
+            android:textStyle="bold"/>
+        <RelativeLayout
+            android:gravity="right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_alignParentRight="true"
+                android:id="@+id/btnPresTl"
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:text="present"
+                android:background="@drawable/toscagreen_rounded_corner"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/mmedium"
+                android:textAllCaps="false"
+                android:layout_margin="5dp"/>
+
+            <Button
+                android:layout_alignParentRight="true"
+                android:id="@+id/btnAbTl"
+                android:layout_below="@id/btnPresTl"
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:text="absent"
+                android:layout_margin="5dp"
+                android:background="@drawable/grey_rounded_corner"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/mmedium"
+                android:textAllCaps="false"/>
+
+            <TextView
+                android:id="@+id/textPresAb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Present"
+                android:textSize="14sp"
+                android:textColor="@color/defaultGrey"
+                android:fontFamily="@font/mmedium"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_alignParentRight="true"
+                android:id="@+id/textConfirmedBy"
+                android:layout_below="@id/textPresAb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textEnd"
+                android:text="checked by Participant"
+                android:textSize="12sp"
+                android:textColor="@color/defaultGrey"
+                android:fontFamily="@font/mmedium"/>
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>

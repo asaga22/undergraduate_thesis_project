@@ -107,7 +107,7 @@ public class ListedJoinGroupTourRequestAdapter extends RecyclerView.Adapter <Lis
 
                                 myViewHolder.reqUsername.setText(user.getFullname() +" request to join " + gt.getTourtitle() +" ("+ gt.getTourid() + ")");
 
-                                final Participant pax = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), 1, false, false);
+                                final Participant pax = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), 1, 2, false);
                                 //accept
                                 myViewHolder.btnAcceptReq.setOnClickListener(new View.OnClickListener() {
                                     @Override

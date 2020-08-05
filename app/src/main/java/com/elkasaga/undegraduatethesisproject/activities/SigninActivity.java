@@ -104,6 +104,7 @@ public class SigninActivity extends AppCompatActivity {
                                             Log.d(TAG, "onComplete: successfully get the  user details.");
                                             User user = task.getResult().toObject(User.class);
                                             //save authenticated user data to local preferences
+                                            ((UserClient) getApplicationContext()).setUser(user);
                                             SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
                                             SharedPreferences.Editor editor = sharedPreferences.edit();
                                             editor.putString("uid", user.getUid());

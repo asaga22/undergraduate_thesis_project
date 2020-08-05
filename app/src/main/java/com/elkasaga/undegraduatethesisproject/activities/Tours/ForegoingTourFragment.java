@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +44,9 @@ public class ForegoingTourFragment extends Fragment {
     String uid;
     long category;
 
+    private TextView nohistory;
+    private ScrollView scrollHistory;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,6 +54,8 @@ public class ForegoingTourFragment extends Fragment {
         mDb = FirebaseFirestore.getInstance();
         listedToursContainer = (RecyclerView) view.findViewById(R.id.listedForegoing);
         listedTour = new ArrayList<GroupTour>();
+        nohistory = view.findViewById(R.id.nohistory);
+        scrollHistory = view.findViewById(R.id.scrollHistory);
         getUserDetailsFromPreference();
         initForgoingTourRecyclerView();
         getForeGoingTourData();
@@ -70,6 +77,9 @@ public class ForegoingTourFragment extends Fragment {
                         Log.d(TAG, "TOURTITLE "+i+" "+gt.getTourtitle()+" | STATUS = "+gt.getTourstatus());
                     }
                     groupTourAdapter.notifyDataSetChanged();
+                } else {
+                    nohistory.setVisibility(View.VISIBLE);
+                    scrollHistory.setVisibility(View.GONE);
                 }
             }
         });

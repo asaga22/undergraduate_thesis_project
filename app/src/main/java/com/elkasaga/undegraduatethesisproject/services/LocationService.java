@@ -1,15 +1,19 @@
 package com.elkasaga.undegraduatethesisproject.services;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
@@ -19,9 +23,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.elkasaga.undegraduatethesisproject.UserClient;
+import com.elkasaga.undegraduatethesisproject.activities.Home.HomeActivity;
+import com.elkasaga.undegraduatethesisproject.models.ChatMessage;
 import com.elkasaga.undegraduatethesisproject.models.Participant;
 import com.elkasaga.undegraduatethesisproject.models.User;
 import com.elkasaga.undegraduatethesisproject.models.UserLocation;
+import com.elkasaga.undegraduatethesisproject.utils.NotificationBroadcast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -32,8 +39,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import javax.annotation.Nullable;
 
@@ -45,6 +57,9 @@ public class LocationService extends Service {
     private final static long UPDATE_INTERVAL = 30 * 1000;  /* 4 secs */
     private final static long FASTEST_INTERVAL = 7 * 2000; /* 2 sec */
 
+    private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+    Handler handler = new Handler();
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -54,6 +69,16 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .setPersistenceEnabled(true)
+                .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+                .build();
+
+        if (mDb.getFirestoreSettings() == null){
+            mDb.setFirestoreSettings(settings);
+        }
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -77,6 +102,7 @@ public class LocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: called.");
         getLocation();
+        startCheckChat();
         return START_NOT_STICKY;
     }
 
@@ -122,7 +148,7 @@ public class LocationService extends Service {
 
         try{
             //update pax loc in Ongoing GT
-            DocumentReference paxLocs = FirebaseFirestore.getInstance().collection("GroupTour")
+            DocumentReference paxLocs = mDb.collection("GroupTour")
                     .document( ((UserClient)getApplicationContext()).getGroupTour().getTourid() )
                     .collection("ParticipantLocation").document(FirebaseAuth.getInstance().getUid());
             paxLocs.set(userLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -141,6 +167,80 @@ public class LocationService extends Service {
             stopSelf();
         }
 
+    }
+
+    private void checkChat(){
+        if (FirebaseAuth.getInstance().getUid() != null){
+            if ( ((UserClient)getApplicationContext()).getGroupTour() != null ){
+                Query emergencyRef = mDb.collection("GroupTour").document( ((UserClient)getApplicationContext()).getGroupTour().getTourid() )
+                        .collection("Discussion").whereEqualTo("systemgenerated", true);
+                emergencyRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@androidx.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @androidx.annotation.Nullable FirebaseFirestoreException e) {
+                        if (queryDocumentSnapshots.size() != 0){
+                            for (int i = 0; i < queryDocumentSnapshots.size(); i++){
+                                ChatMessage chatMessage = queryDocumentSnapshots.getDocuments().get(i).toObject(ChatMessage.class);
+                                if (!chatMessage.getUser().getUid().equals(FirebaseAuth.getInstance().getUid())){
+                                    if (chatMessage.getReadByList() == null){
+                                        Log.d(TAG, "DAPET NIH CHECK CHATNYA  = "+ chatMessage.getMessageid());
+//                                    buildNotifForEmergency(chatMessage);
+                                    } else {
+                                        if ( !chatMessage.getReadByList().contains(FirebaseAuth.getInstance().getUid()) ){
+                                            Log.d(TAG, "DAPET NIH CHECK CHATNYA  = "+ chatMessage.getMessageid());
+                                            buildNotifForEmergency(chatMessage);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    public void buildNotifForEmergency(ChatMessage chatMessage){
+        Intent intent = new Intent( LocationService.this, NotificationBroadcast.class);
+        intent.putExtra("reqcode", -10);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(String.valueOf(-10), MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("title", "Emergency Notification");
+        editor.putString("message", chatMessage.getMessage());
+        editor.putInt("reqcode", (int) -10);
+        editor.putString("chatid", chatMessage.getMessageid());
+        editor.putString("notiftype", "emergency");
+        editor.putString("tourtitle", ((UserClient)getApplicationContext()).getGroupTour().getTourtitle());
+        editor.putString("tourid", ((UserClient)getApplicationContext()).getGroupTour().getTourid());
+        editor.putString("startdate", ((UserClient)getApplicationContext()).getGroupTour().getStartdate());
+        editor.putString("enddate", ((UserClient)getApplicationContext()).getGroupTour().getEnddate());
+        editor.putString("starttime", ((UserClient)getApplicationContext()).getGroupTour().getStarttime());
+        editor.putString("endtime", ((UserClient)getApplicationContext()).getGroupTour().getEndtime());
+        editor.putLong("tourstatus", ((UserClient)getApplicationContext()).getGroupTour().getTourstatus());
+        editor.putString("tourleader", ((UserClient)getApplicationContext()).getGroupTour().getTourleader());
+        editor.apply();
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(LocationService.this, (int) -10, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP,
+                1000,
+                pendingIntent);
+    }
+
+    Runnable checkChatRunnable = new Runnable(){
+
+        @Override
+        public void run() {
+            try{
+                checkChat();
+            } finally {
+                handler.postDelayed(checkChatRunnable, (10 * 1000));
+            }
+        }
+    };
+
+    private  void startCheckChat(){
+        checkChatRunnable.run();
     }
 
 }

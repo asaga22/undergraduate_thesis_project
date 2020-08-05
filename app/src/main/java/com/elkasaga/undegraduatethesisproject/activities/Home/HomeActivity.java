@@ -17,7 +17,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
@@ -34,11 +33,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.elkasaga.undegraduatethesisproject.R;
 import com.elkasaga.undegraduatethesisproject.UserClient;
@@ -48,6 +46,7 @@ import com.elkasaga.undegraduatethesisproject.activities.Tours.TourDetailsDiscus
 import com.elkasaga.undegraduatethesisproject.activities.Tours.TourDetailsItineraryActivity;
 import com.elkasaga.undegraduatethesisproject.activities.Tours.TourDetailsParticipantActivity;
 import com.elkasaga.undegraduatethesisproject.activities.Tours.ToursActivity;
+import com.elkasaga.undegraduatethesisproject.models.ChatMessage;
 import com.elkasaga.undegraduatethesisproject.models.GroupTour;
 import com.elkasaga.undegraduatethesisproject.models.Itinerary;
 import com.elkasaga.undegraduatethesisproject.models.Participant;
@@ -72,13 +71,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -101,12 +100,13 @@ public class HomeActivity extends AppCompatActivity {
 
     TextView createTourLink, seeListedTourLink, greetingN, greeting,
              tourTitleHome, startDateInHome, endDateInHome, mPleaseWait;
-    RelativeLayout homeMaps, homeDiscussion, homeParticipant, homeItinerary;
+    RelativeLayout homeMaps, homeDiscussion, homeParticipant, homeItinerary, emergencyBtn;
     RelativeLayout homeNoTour;
     RelativeLayout homeLayout;
     ProgressBar mProgressBar;
     private ListenerRegistration mOngoingTourEventListener;
     RelativeLayout hl;
+    SwipeRefreshLayout swipeRefreshLayout;
 
 
     private boolean mLocationPermissionGranted = false;
@@ -122,11 +122,23 @@ public class HomeActivity extends AppCompatActivity {
     private ArrayList<AlarmManager> alarmManagers= new ArrayList<>();
     ArrayList<PendingIntent> intentArray = new ArrayList<PendingIntent>();
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(0, 0);
         setContentView(R.layout.activity_home);
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .setPersistenceEnabled(true)
+                .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+                .build();
+
+        if (mDb.getFirestoreSettings() == null){
+            mDb.setFirestoreSettings(settings);
+        }
+
         initWidgets();
         setupBottomNavigationView();
         userPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
@@ -134,8 +146,8 @@ public class HomeActivity extends AppCompatActivity {
         createNotificationChannel();
 
         if ( ((UserClient)getApplicationContext()).getGroupTour() != null ){
+
             Log.d(TAG, "HOME: GT SKELETON: "+((UserClient)getApplicationContext()).getGroupTour().getTourid());
-            getParticipantLocation();
             gt = new GroupTour(((UserClient)getApplicationContext()).getGroupTour().getTourtitle(),
                     ((UserClient)getApplicationContext()).getGroupTour().getTourid(),
                     ((UserClient)getApplicationContext()).getGroupTour().getTourleader(),
@@ -146,6 +158,7 @@ public class HomeActivity extends AppCompatActivity {
                     ((UserClient)getApplicationContext()).getGroupTour().getTourstatus());
             Log.d(TAG, "Home: am i called? i hope so");
             getLastKnownLocation();
+            getParticipantLocation();
 
             if (checkMapServices()){
                 if (mLocationPermissionGranted){
@@ -154,14 +167,21 @@ public class HomeActivity extends AppCompatActivity {
                     getLocationPermission();
                 }
             }
+
             homeNoTour.setVisibility(View.GONE);
             homeLayout.setVisibility(View.VISIBLE);
             tourTitleHome.setText(gt.getTourtitle());
-            startDateInHome.setText(gt.getStartdate());
-            endDateInHome.setText(gt.getEnddate());
+            startDateInHome.setText(DateConvert.dateToDateWithTextMonth(DateConvert.convertStringToDate(gt.getStartdate())));
+            endDateInHome.setText(DateConvert.dateToDateWithTextMonth(DateConvert.convertStringToDate(gt.getEnddate())));
             mProgressBar.setVisibility(View.GONE);
             mPleaseWait.setVisibility(View.GONE);
             checkItinerary();
+            //check user category
+            if (((UserClient)getApplicationContext()).getUser().getCategory() == 0){
+                emergencyBtn.setVisibility(View.GONE);
+            } else {
+                initEmergencyBtn();
+            }
         } else {
             homeLayout.setVisibility(View.GONE);
             homeNoTour.setVisibility(View.VISIBLE);
@@ -172,6 +192,7 @@ public class HomeActivity extends AppCompatActivity {
 
         //universal setup
         greeting.setText(getGreeting());
+        initSwipeRefreshLayout();
 
         initOngoingMapsButton();
         initOngoingItineraryButton();
@@ -180,8 +201,75 @@ public class HomeActivity extends AppCompatActivity {
 
         initCreateNewTourLink();
         initSeeListedTourLink();
+//        startGroupTourStatusService();
 
 
+    }
+
+    private void initEmergencyBtn(){
+        emergencyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buildEmergencyDialog();
+            }
+        });
+    }
+
+    private void buildEmergencyDialog(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+        builder.setTitle("Are you in Emergency situation?");
+        builder.setMessage("note: a notification will be broadcast to every member of the Group Tour");
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+            String message = ((UserClient)getApplicationContext()).getUser().getFullname() + "is in emergency situation!";
+
+            public void onClick(final DialogInterface dialog, int which) {
+                // Do some task: insert new message in gt discussion db
+
+                DocumentReference chatMessageRef = mDb.collection("GroupTour")
+                        .document(((UserClient)getApplicationContext()).getGroupTour().getTourid())
+                        .collection("Discussion")
+                        .document();
+
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = null;
+                try {
+                    date = sdf.parse(Calendar.getInstance().getTime().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                ArrayList<String> readBy = new ArrayList<>();
+                readBy.add(FirebaseAuth.getInstance().getUid());
+
+                ChatMessage chatMessage = new ChatMessage(chatMessageRef.getId(), message, true, date, ((UserClient)getApplicationContext()).getUser(), readBy);
+                chatMessageRef.set(chatMessage).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            Toast.makeText(mContext, "Your emergency situation has been notify to all members", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void startLocationService(){
@@ -207,6 +295,32 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
         Log.d(TAG, "isLocationServiceRunning: location service is not running.");
+        return false;
+    }
+
+//    private void startGroupTourStatusService(){
+//        if(!isGroupTourStatusService()){
+//            Intent serviceIntent = new Intent(this, UpdateGroupTourStatusService.class);
+//            this.startService(serviceIntent);
+//
+//            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+//
+//                HomeActivity.this.startForegroundService(serviceIntent);
+//            }else{
+//                startService(serviceIntent);
+//            }
+//        }
+//    }
+
+    private boolean isGroupTourStatusService() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if("ccom.elkasaga.undegraduatethesisproject.services.UpdateGroupTourStatusService".equals(service.service.getClassName())) {
+                Log.d(TAG, "isGroupTourStatusService: gt service is already running.");
+                return true;
+            }
+        }
+        Log.d(TAG, "isGroupTourStatusService: gt service is not running.");
         return false;
     }
 
@@ -252,6 +366,18 @@ public class HomeActivity extends AppCompatActivity {
         createTourLink.setText(Html.fromHtml(getString(R.string.create_new_tour)));
         seeListedTourLink.setText(Html.fromHtml(getString(R.string.see_listed_tour)));
         greetingN = (TextView) findViewById(R.id.greetingNothing);
+        emergencyBtn = (RelativeLayout) findViewById(R.id.emergencyBtn);
+        swipeRefreshLayout = findViewById(R.id.swipeToRefreshHome);
+    }
+
+    private void initSwipeRefreshLayout(){
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Intent toItsSefl = new Intent(mContext, HomeActivity.class);
+                startActivity(toItsSefl);
+            }
+        });
     }
 
     private void initOngoingMapsButton(){
@@ -261,6 +387,7 @@ public class HomeActivity extends AppCompatActivity {
                 MapsFragment fragment = MapsFragment.newInstance();
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("pax_locations", mUserLocations);
+                bundle.putParcelable("current_user_location", mUserLocation);
                 bundle.putString("OT_ID", gt.getTourid());
                 fragment.setArguments(bundle);
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -288,7 +415,6 @@ public class HomeActivity extends AppCompatActivity {
                     for (int i = 0; i < queryDocumentSnapshots.size(); i++){
                         UserLocation userLocation = queryDocumentSnapshots.getDocuments().get(i).toObject(UserLocation.class);
                         mUserLocations.add(userLocation);
-                        Log.d(TAG, "UserLocation aladah nama: "+mUserLocations.get(i).getParticipant().getFullname());
                     }
                 }
             }
@@ -329,13 +455,14 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (queryDocumentSnapshots.size() != 0){
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots){
-                        Itinerary itinerary = doc.toObject(Itinerary.class);
+                    for (int i = 0; i < queryDocumentSnapshots.size(); i++){
+                        Itinerary itinerary = queryDocumentSnapshots.getDocuments().get(i).toObject(Itinerary.class);
                         if (!itineraryIdList.contains(itinerary.getItineraryid())){
                             itineraryIdList.add(itinerary.getItineraryid());
                             itineraryList.add(itinerary);
-                            long currentMillis = DateConvert.dateToMillis(currentDate) - 10000;
+                            long currentMillis = DateConvert.dateToMillis(currentDate);
                             long itiMillis = DateConvert.dateToMillis(DateConvert.convertStringToDate(itinerary.getDate() +" "+itinerary.getStarttime()));
+                            long endMillis = DateConvert.dateToMillis(DateConvert.convertStringToDate(itinerary.getDate() +" "+itinerary.getEndtime()));
                             long timeToNotify = (itiMillis - currentMillis);
 
                             Log.d(TAG, "CURR MILLIS = "+ currentMillis);
@@ -344,16 +471,24 @@ public class HomeActivity extends AppCompatActivity {
 
                             if (itiMillis >= currentMillis){
                                 Intent intent = new Intent(HomeActivity.this, NotificationBroadcast.class);
-                                Bundle mBundle = new Bundle();
-                                mBundle.putString("notiftype", "ogt_iti_start");
-                                mBundle.putInt("reqcode", (int) timeToNotify);
-                                intent.putExtras(mBundle);
+                                intent.putExtra("reqcode", (int) timeToNotify);
 
                                 SharedPreferences sharedPreferences = getSharedPreferences(String.valueOf(timeToNotify), MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString("title", "Itinerary Reminder");
                                 editor.putString("message", "it's time for activity: "+itinerary.getDescription());
                                 editor.putInt("reqcode", (int) timeToNotify);
+                                editor.putString("tourid", ((UserClient)getApplicationContext()).getGroupTour().getTourid());
+                                editor.putString("notiftype", "ogt_iti_start");
+                                editor.putString("itineraryid", itinerary.getItineraryid());
+                                editor.putString("date", itinerary.getDate());
+                                editor.putString("starttime", itinerary.getStarttime());
+                                editor.putString("endtime", itinerary.getEndtime());
+                                editor.putString("description", itinerary.getDescription());
+                                editor.putLong("itinerarystatus", itinerary.getItinerarystatus());
+                                editor.putLong("day", itinerary.getDay());
+                                editor.putLong("itinerarycategory", itinerary.getItinerarycategory());
+                                editor.putLong("indexstarttime", itinerary.getIndexstarttime());
                                 editor.apply();
 
                                 PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, (int) timeToNotify, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -361,9 +496,35 @@ public class HomeActivity extends AppCompatActivity {
                                 alarmManager.set(AlarmManager.RTC_WAKEUP,
                                         itiMillis,
                                         pendingIntent);
-                                alarmManagers.add(alarmManager);
-                                intentArray.add(pendingIntent);
+
+                                Intent intentEnd = new Intent(HomeActivity.this, NotificationBroadcast.class);
+                                intentEnd.putExtra("reqcode", (int) (timeToNotify+100));
+
+                                SharedPreferences sharedPreferencesEnd = getSharedPreferences(String.valueOf(timeToNotify+100), MODE_PRIVATE);
+                                SharedPreferences.Editor editoreEnd = sharedPreferencesEnd.edit();
+                                editoreEnd.putString("title", "Itinerary Reminder");
+                                editoreEnd.putString("message", "activity "+itinerary.getDescription()+" is over");
+                                editoreEnd.putInt("reqcode", (int) (timeToNotify+100));
+                                editoreEnd.putString("tourid", ((UserClient)getApplicationContext()).getGroupTour().getTourid());
+                                editoreEnd.putString("notiftype", "ogt_iti_end");
+                                editoreEnd.putString("itineraryid", itinerary.getItineraryid());
+                                editoreEnd.putString("date", itinerary.getDate());
+                                editoreEnd.putString("starttime", itinerary.getStarttime());
+                                editoreEnd.putString("endtime", itinerary.getEndtime());
+                                editoreEnd.putString("description", itinerary.getDescription());
+                                editoreEnd.putLong("itinerarystatus", itinerary.getItinerarystatus());
+                                editoreEnd.putLong("day", itinerary.getDay());
+                                editoreEnd.putLong("itinerarycategory", itinerary.getItinerarycategory());
+                                editoreEnd.putLong("indexstarttime", itinerary.getIndexstarttime());
+                                editoreEnd.apply();
+
+                                PendingIntent pendingIntentEnd = PendingIntent.getBroadcast(HomeActivity.this, (int) (timeToNotify+100), intentEnd, PendingIntent.FLAG_UPDATE_CURRENT);
+                                AlarmManager alarmManagerEnd = (AlarmManager) getSystemService(ALARM_SERVICE);
+                                alarmManagerEnd.set(AlarmManager.RTC_WAKEUP,
+                                        endMillis-100,
+                                        pendingIntentEnd);
                             }
+
                         }
                     }
 
@@ -372,6 +533,8 @@ public class HomeActivity extends AppCompatActivity {
         });
 
     }
+
+
 
     private void createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -477,7 +640,7 @@ public class HomeActivity extends AppCompatActivity {
                                     Log.d(TAG, "onComplete: successfully get the  this pax details.");
                                     Participant thisPax = task.getResult().toObject(Participant.class);
                                     if (thisPax == null){
-                                        Participant fromUser = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), user.getCategory(), true, false);
+                                        Participant fromUser = new Participant(user.getUid(), user.getUsername(), user.getFullname(), user.getAvatar(), user.getCategory(), 2, false);
                                         mUserLocation.setParticipant(fromUser);
                                         ((UserClient)getApplicationContext()).setParticipant(fromUser);
                                     } else {
@@ -639,12 +802,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        Log.d(TAG, "onResume Lifecycle");
-//
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume Lifecycle");
+
+    }
 
     /*
      * Bottom Navigation Setup

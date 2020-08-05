@@ -65,6 +65,17 @@ public class TourDetailsDiscussionActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tourdetailsdiscussion);
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .setPersistenceEnabled(true)
+                .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+                .build();
+
+        if (mDb.getFirestoreSettings() == null){
+            mDb.setFirestoreSettings(settings);
+        }
+
         initWidgets();
         userPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
         gtPreferences = getSharedPreferences("GT_BASICINFO", MODE_PRIVATE);
@@ -164,11 +175,6 @@ public class TourDetailsDiscussionActivity extends AppCompatActivity {
                     if (task.isSuccessful()){
                         User user = task.getResult().toObject(User.class);
 
-                        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                                .setTimestampsInSnapshotsEnabled(true)
-                                .build();
-                        mDb.setFirestoreSettings(settings);
-
                         DocumentReference chatMessageRef = mDb.collection("GroupTour")
                                 .document(gtPreferences.getString("tourid", ""))
                                 .collection("Discussion")
@@ -180,7 +186,7 @@ public class TourDetailsDiscussionActivity extends AppCompatActivity {
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-                        ChatMessage chatMessage = new ChatMessage(chatMessageRef.getId(), message, date, user);
+                        ChatMessage chatMessage = new ChatMessage(chatMessageRef.getId(), message, false, date, user, null);
                         chatMessageRef.set(chatMessage).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
